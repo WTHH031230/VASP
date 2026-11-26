@@ -2,6 +2,26 @@
 
 Official codebase for **VASP: Visual-anchored Agent for Scientific Poster Generation**.
 
+## Agent Skills (Experimental — Recommended)
+
+> **Recommended for everyday poster generation:** Although experimental, the two self-contained Agent Skills under `skills/` are our **recommended** way to use VASP on your own papers. They bundle VASP's full deterministic engines while running natively inside **any** skill-capable coding agent (Claude Code, Codex CLI, Antigravity, Pi, Cursor, OpenCode, Gemini CLI, etc.)—giving you harness-free setup, better generalization to diverse PDF layouts via visual crop verification/repair, native editable PPTX export, and interactive human-in-the-loop refinement. (To reproduce the paper's automated batch tables and ablations, use the CLI pipeline below.)
+
+| Skill | Bundled Deterministic Engine | Purpose |
+|---|---|---|
+| [`skills/vasp-semparser/`](skills/vasp-semparser/SKILL.md) | Full SemParser PDF geometry & caption-anchored region-growing engine (`caption_cut`, outer/structured rules, table bands, metadata/logo/QR packager) + coordinate-grid lossless `recrop` | **Stage 1:** Parse any scientific PDF into a standardized VASP Asset Package with visual crop verification & surgical repair |
+| [`skills/vasp-viscomposer/`](skills/vasp-viscomposer/SKILL.md) | Full VisComposer Playwright harness (`render_html`, `workbench`, `gate`, `control`, `geometry_fit`, contact & zoomed figure detail sheets) + standalone PNG/PDF/editable-PPTX exporter | **Stage 2:** Visual-First poster composition, closed-loop DOM & claim-evidence verification, and PNG/PDF/PPTX export (works with SemParser packages or custom figure folders) |
+
+Each skill directory is **100% self-contained** (no dependency on the rest of this repository) and can be used independently or chained end-to-end:
+
+```bash
+# Copy both skills into your agent's skills directory (example for Claude Code / Codex / Antigravity)
+cp -r skills/vasp-semparser skills/vasp-viscomposer ~/.claude/skills/   # or ~/.codex/skills/ or ~/.gemini/config/skills/
+
+# Install skill runtime dependencies once
+pip install -r skills/vasp-semparser/scripts/requirements.txt -r skills/vasp-viscomposer/scripts/requirements.txt
+playwright install chromium
+```
+
 ## Repository Structure
 
 ```text
@@ -15,6 +35,7 @@ VASP/
 ├── configs/
 │   ├── pi/               # Provider template (models.example.json) & settings.json
 │   └── schemas/          # JSON schemas for VisComposer, Visual Presentation, and Key-Info Coverage
+├── skills/               # Self-contained Agent Skills (Experimental — Recommended): vasp-semparser & vasp-viscomposer
 ├── scripts/              # Shell entrypoints for end-to-end generation, ablations, and benchmarks
 └── requirements.txt
 ```

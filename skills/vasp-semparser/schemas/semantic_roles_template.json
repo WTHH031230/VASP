@@ -1,0 +1,653 @@
+{
+  "type": "object",
+  "properties": {
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "title_author",
+                  "page_header",
+                  "page_footer",
+                  "body",
+                  "equation_caption",
+                  "algorithm",
+                  "figure_content",
+                  "footnote",
+                  "references",
+                  "page_number",
+                  "other"
+                ]
+              }
+            },
+            "required": [
+              "start",
+              "end",
+              "role"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "heading"
+                ]
+              },
+              "level": {
+                "type": "string",
+                "enum": [
+                  "section",
+                  "subsection",
+                  "runin"
+                ]
+              }
+            },
+            "required": [
+              "start",
+              "end",
+              "role",
+              "level"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "figure_caption",
+                  "table_title"
+                ]
+              },
+              "num": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "\\S"
+                  }
+                ]
+              },
+              "family": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "required": [
+              "start",
+              "end",
+              "role",
+              "num",
+              "family"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9999
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "subfig_caption"
+                ]
+              },
+              "parent": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "\\S"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "family": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "required": [
+              "start",
+              "end",
+              "role",
+              "parent",
+              "family"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "num": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "caption": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "footnotes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "emphasis": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/dictionary_entry"
+            }
+          },
+          "source_line_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "partial",
+              "unresolved"
+            ]
+          },
+          "family": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "num",
+          "caption",
+          "headers",
+          "rows",
+          "footnotes",
+          "emphasis",
+          "source_line_ids",
+          "status",
+          "family"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "equations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "latex": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "context": {
+            "type": "string"
+          },
+          "source_line_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "partial",
+              "unresolved"
+            ]
+          },
+          "family": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "label",
+          "latex",
+          "context",
+          "source_line_ids",
+          "status",
+          "family"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "algorithms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "num": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "source_line_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "partial",
+              "unresolved"
+            ]
+          },
+          "family": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "num",
+          "title",
+          "inputs",
+          "outputs",
+          "steps",
+          "source_line_ids",
+          "status",
+          "family"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "author_index_map": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "author": {
+                "type": "string"
+              },
+              "institute_indices": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "required": [
+              "author",
+              "institute_indices"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "institutes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "venue": {
+          "type": "string"
+        },
+        "paper_url": {
+          "type": "string"
+        },
+        "code_url": {
+          "type": "string"
+        },
+        "arxiv_id": {
+          "type": "string"
+        },
+        "project_url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "authors",
+        "author_index_map",
+        "institutes",
+        "venue",
+        "paper_url",
+        "code_url",
+        "arxiv_id",
+        "project_url"
+      ],
+      "additionalProperties": false
+    },
+    "page_outer_boundaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "top": {
+            "type": "object",
+            "properties": {
+              "candidate_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "confidence",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "bottom": {
+            "type": "object",
+            "properties": {
+              "candidate_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "confidence",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "left": {
+            "type": "object",
+            "properties": {
+              "candidate_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "confidence",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "right": {
+            "type": "object",
+            "properties": {
+              "candidate_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "confidence",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "page",
+          "top",
+          "bottom",
+          "left",
+          "right"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "segments",
+    "tables",
+    "equations",
+    "algorithms",
+    "metadata",
+    "page_outer_boundaries"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "dictionary_entry": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/json_value"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "json_value": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/json_value"
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "entries": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/dictionary_entry"
+              }
+            }
+          },
+          "required": [
+            "entries"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}
