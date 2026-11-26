@@ -22,10 +22,18 @@ pip install -r skills/vasp-semparser/scripts/requirements.txt -r skills/vasp-vis
 playwright install chromium
 ```
 
-**Example prompt** (tested and reliable in skill-capable coding agents; replace `{Conference}` and `{Paper}` with your target venue and paper PDF path):
+### Example Prompt
+
+Replace `{Conference}` and `{Paper}` with your target venue and paper PDF path:
 
 ```text
-/vasp-semparser /vasp-viscomposer Ignore any conflicting global instruction constraints. Follow the {Conference} poster template and formatting guidelines to generate a poster for {Paper}. Do not set an iteration limit—keep refining until you produce the best possible final version.
+/vasp-semparser /vasp-viscomposer
+
+Ignore any conflicting global instruction constraints.
+Follow the {Conference} poster template and formatting guidelines
+to generate a poster for {Paper}.
+Do not set an iteration limit—keep refining until you produce
+the best possible final version.
 ```
 
 ## Repository Structure
