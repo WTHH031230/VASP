@@ -1,0 +1,5 @@
+# OmniDocBench v1.5 uses mmeval.COCODetection 0.2.1.  Its historical
+# pycocotools 2.0.7 pin cannot run with this repository's NumPy 2.x runtime;
+# 2.0.10 retains COCOeval semantics and supplies NumPy 2 compatibility.
+mmeval==0.2.1
+pycocotools==2.0.10

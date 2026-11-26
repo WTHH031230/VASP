@@ -1,0 +1,13 @@
+# Additional packages needed on top of the existing paper2poster environment.
+marker-pdf @ git+https://github.com/Hadlay-Zhang/marker.git@1f5bd038e891a4fbb78e87c82897b96eba155ad7
+pdftext==0.6.3
+surya-ocr==0.14.7
+markdownify==1.2.0
+langgraph==0.4.8
+langgraph-checkpoint>=2.0.26,<3
+langgraph-prebuilt>=0.2,<0.3
+langgraph-sdk>=0.1.42,<0.2
+langchain-core>=0.3.33,<0.4
+langsmith>=0.1.125,<0.4
+websockets>=14,<15
+qrcode[pil]>=7.4.2

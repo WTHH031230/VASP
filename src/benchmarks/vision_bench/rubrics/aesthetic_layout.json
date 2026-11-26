@@ -1,0 +1,124 @@
+{
+  "dimension": "aesthetic_layout",
+  "dimension_title": "Layout and spatial organization",
+  "description": "Essential spatial integrity, visual information density, and whitespace quality: poster-level overlap, ownership grouping, the match between visible content complexity and occupied space, and the purpose of large empty regions.",
+  "system_prompt": "Judge whole-poster spatial organization only. Check for poster-level overlap, ambiguous element ownership, the match between visible content complexity and occupied space, and whether large empty regions serve an observable layout function. Do not estimate grid-alignment percentages, gap ratios, header-height percentages, section-area percentages, column-bottom differences, caption-distance ratios, or whitespace-area percentages. Evaluate the single supplied question according to its complete question-specific instructions.",
+  "questions": [
+    {
+      "id": "AL01",
+      "question_type": "gate",
+      "question": "Is the poster free from unintended poster-level overlaps that obscure or materially interfere with meaningful content?",
+      "evaluation_instructions": {
+        "definition": "An unintended poster-level overlap is a directly visible spatial intersection between two or more separately placed poster elements that obscures meaningful content, reduces its recognizability, or creates clear ambiguity about element ownership. Operationalize unintended through the harmful visible effect; do not speculate about the designer's intent.",
+        "scope": "Inspect poster-level titles, author information, body-text blocks, figures, tables, captions, legends, formulas, callouts, panel borders, logos, badges, and decorative elements. Treat every inserted paper-derived figure, chart, table image, diagram, or image crop as one trusted atomic asset. Do not inspect overlaps among labels, arrows, nodes, curves, photographs, or other components baked inside that asset.",
+        "scan_sequence": [
+          "Inspect the main title, author, affiliation, logo, and header region.",
+          "Inspect each major content panel or column separately, including its heading, body text, formulas, and callouts.",
+          "Inspect every poster-level boundary between a figure and its caption, surrounding prose, neighboring figure, table, or panel.",
+          "Inspect result cards, conclusion or takeaway callouts, badges, legends placed outside figures, and decorative overlays.",
+          "Inspect the footer, references, QR codes, contact information, and lower edge regions."
+        ],
+        "fail_triggers": [
+          "Two separately placed text blocks intersect so that characters cover one another or become materially harder to recognize.",
+          "Poster-level text covers a meaningful figure or table region, including a data mark, label, legend, axis, image example, or necessary structural component.",
+          "Two separately placed figures, tables, or content panels intersect and one obscures meaningful content in the other.",
+          "A heading, caption, legend, formula, explanatory label, QR code, or contact item is visibly covered by another poster-level element.",
+          "A logo, badge, decoration, border, rule, shadow, or color block lies above and obscures readable text or another meaningful visual element.",
+          "A visible intersection makes a caption, heading, legend, or label appear to belong to the wrong content or leaves its ownership materially ambiguous."
+        ],
+        "explicit_non_failures": [
+          "Two elements are close, cramped, or touching but do not spatially intersect.",
+          "Text or a figure touches a panel boundary without being covered or losing meaningful content.",
+          "A background fill, panel fill, highlight, label backing, or other clearly subordinate layer sits behind content while preserving recognizability.",
+          "An intentional-looking border, underline, corner tag, badge backing, drop shadow, or decorative overlay does not obscure meaningful content.",
+          "A connector, arrow, or rule crosses background space or another non-meaningful area without covering readable text or necessary visual content.",
+          "The apparent overlap exists entirely inside a trusted paper-derived figure or other atomic visual asset."
+        ],
+        "verdict_guidance": "Mere proximity, insufficient spacing, or a small gap is not overlap. Return FAIL only when a directly visible poster-level intersection causes one of the listed harmful effects. For every FAIL, name both intersecting elements and their precise poster location."
+      },
+      "pass_condition": "PASS when no separately placed poster-level element visibly intersects another in a way that obscures meaningful content, reduces recognizability, or creates clear ownership ambiguity. Apply all explicit non-failures.",
+      "fail_condition": "FAIL when at least one listed fail trigger is directly visible. Identify both overlapping elements, the content affected, and the approximate location.",
+      "applicability": "Always applicable.",
+      "weight": 1.0,
+      "critical": true
+    },
+    {
+      "id": "AL05",
+      "question_type": "gate",
+      "question": "Is every heading, caption, legend, bullet continuation, and explanatory label spatially grouped with the content it belongs to?",
+      "pass_condition": "Proximity and enclosure make the ownership of every auxiliary element unambiguous.",
+      "fail_condition": "At least one auxiliary element is closer to, aligned with, or enclosed by the wrong content, or appears visibly orphaned.",
+      "applicability": "Applicable when any of the named auxiliary elements are present; otherwise NOT_APPLICABLE.",
+      "weight": 1.0,
+      "critical": true
+    },
+    {
+      "id": "DEN01",
+      "question_type": "discriminative",
+      "question": "Does the poster have a reasonable visual information density?",
+      "evaluation_instructions": {
+        "definition": "Visual information density is the relationship between the visible amount and complexity of text, figures, charts, tables, formulas, modules, and decorative elements and the poster area that they occupy.",
+        "scope": "Judge only visual information density and use of space. Do not judge whether the poster completely covers the source paper, whether the content is scientifically correct, or whether relationships inside a paper-derived figure are correct. For a complex figure, judge only whether its displayed size is appropriate for its visible amount of detail.",
+        "pass_criteria": [
+          "The amount of text, figures, charts, tables, and other modules broadly matches the available poster area; content has not been generally reduced to an impractically small display size merely to fit more material.",
+          "Body-text paragraphs, text-and-figure pairs, and separate modules retain visibly distinguishable spacing; the poster does not contain a broad continuous region of pressed-together or densely stacked content.",
+          "Complex figures, flow diagrams, tables, and image groups receive display areas commensurate with their visible numbers of labels, nodes, rows, columns, or subpanels; detail-rich assets are not presented at an obviously undersized scale.",
+          "Differences in density across regions have an understandable layout purpose. A focal region may be denser and a supporting region sparser, but one region should not be severely crowded beside a large unused region with no visible design purpose.",
+          "The poster is neither broadly filled with continuous small body text, dense graphics, and many fragmented modules nor visibly hollow because too little content leaves modules loose and substantial space purposelessly unused.",
+          "In the normal whole-poster view, titles, main content, figures, and supporting information remain distinguishable; where local information is dense, element boundaries and grouping remain clear."
+        ],
+        "minor_variation_rule": "A few locally dense or sparse areas are acceptable when they do not materially impair element recognition, grouping, or the overall use of the poster area.",
+        "fail_triggers": [
+          "A broad continuous area is dominated by small body text or tightly packed modules.",
+          "Several figures, charts, tables, or diagrams are obviously too small for their visible detail because of limited allocated space.",
+          "Several modules are pressed together or lack visibly distinguishable separation.",
+          "One region is severely crowded while a nearby region is conspicuously unused without an evident layout purpose.",
+          "The poster is visibly overfilled or visibly underfilled as a whole.",
+          "Local density makes element boundaries, grouping, or ownership difficult to identify."
+        ]
+      },
+      "pass_condition": "PASS only when the visible amount and complexity of content broadly match the occupied space, modules remain distinguishable, complex visuals receive adequate display area, regional density differences appear purposeful, and the poster is neither visibly overfilled nor underfilled. Apply the stated minor-variation rule.",
+      "fail_condition": "FAIL when any listed fail trigger is clearly visible. Identify the affected region and the specific density problem in the evidence.",
+      "applicability": "Always applicable. Judge the normal whole-poster view qualitatively and do not estimate an empty-area percentage.",
+      "weight": 1.5,
+      "critical": false
+    },
+    {
+      "id": "WS01",
+      "question_type": "gate",
+      "question": "Is the poster free from any large area of ineffective whitespace?",
+      "evaluation_instructions": {
+        "effective_whitespace_definition": "Effective whitespace is intentionally arranged empty space with an observable layout function. It helps readers understand relationships among content, establishes hierarchy, highlights important material, guides reading, relieves crowding, or creates a deliberate visual rhythm.",
+        "ineffective_whitespace_definition": "Ineffective whitespace is a large empty region passively left by poor content placement. It has no observable grouping, emphasis, navigation, relief, or rhythm function and instead makes the poster look loose, disconnected, or visually imbalanced.",
+        "effective_functions": [
+          "Grouping: related elements are placed closer together while the whitespace separates them from a different module.",
+          "Emphasis: extra space around an important title, key figure, or concluding message makes that element more prominent.",
+          "Reading guidance: column gaps, section gaps, or paragraph gaps help establish a coherent reading path.",
+          "Crowding relief: space between body text, figures, tables, numbers, or modules provides a useful visual pause.",
+          "Rhythm: purposeful variation between denser and sparser regions creates an organized visual cadence rather than accidental emptiness."
+        ],
+        "scope": "Judge only poster-level whitespace between or within placed content modules. Do not inspect or penalize blank areas baked into a trusted paper-derived figure asset, and do not judge the source figure's aspect ratio. Where a figure is involved, judge only whether its poster-level displayed scale or placement leaves a large unusable surrounding gap. Do not infer that omitted paper content should have filled an empty region.",
+        "decision_procedure": [
+          "Identify any visibly large empty region relative to the poster and its neighboring modules; do not estimate a numerical area percentage.",
+          "For each such region, look for an observable grouping, emphasis, reading-guidance, crowding-relief, or rhythm function.",
+          "Treat a large region as ineffective only when no such function is observable and the region causes looseness, disconnection, unnecessary separation, wasted allocated space, or visual imbalance.",
+          "Do not fail a poster merely because a blank region is large. A large intentional margin or open area is acceptable when its function is visually evident."
+        ],
+        "fail_examples": [
+          "A figure or content module is displayed unnecessarily small while a large part of its allocated region remains unused.",
+          "A module contains too little content and leaves a large internal hole with no visible grouping or emphasis purpose.",
+          "Closely related neighboring content is separated by a disproportionately large empty gap without a reading-order function.",
+          "One side or region is largely empty while another is crowded, producing a clear visual imbalance without an evident design purpose.",
+          "A figure's poster-level displayed scale or placement creates an awkward large gap above, below, or beside it.",
+          "A large empty region corresponds to no visible title, group boundary, focal element, reading path, or deliberate rhythm."
+        ],
+        "minor_variation_rule": "Small local holes, ordinary margins, and mildly uneven gaps are acceptable. FAIL requires at least one clearly large and clearly ineffective whitespace region."
+      },
+      "pass_condition": "PASS when no clearly large ineffective whitespace region is visible. Large whitespace may pass when it observably supports grouping, emphasis, reading guidance, crowding relief, or visual rhythm.",
+      "fail_condition": "FAIL when at least one clearly large empty region has no observable layout function and visibly causes looseness, disconnection, wasted allocated space, unnecessary separation, or visual imbalance. Identify the exact region and explain why it is ineffective.",
+      "applicability": "Always applicable. If the poster contains no visibly large whitespace region, return PASS rather than NOT_APPLICABLE.",
+      "weight": 1.0,
+      "critical": true
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["poster_id", "assessments", "missing_count"],
+  "properties": {
+    "poster_id": {"type": "string"},
+    "assessments": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["unit_id", "verdict", "evidence", "rationale"],
+        "properties": {
+          "unit_id": {"type": "string"},
+          "verdict": {"type": "string", "enum": ["COVERED", "NOT_COVERED"]},
+          "evidence": {"type": "string"},
+          "rationale": {"type": "string"}
+        }
+      }
+    },
+    "missing_count": {"type": "integer", "minimum": 0, "maximum": 7}
+  }
+}

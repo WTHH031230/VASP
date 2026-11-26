@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.DS_Store
+._*
+*.orig
+outputs/
+results/
+src/viscomposer/pi/node_modules/
+src/viscomposer/pi/cwd/
+configs/pi/models.json
+configs/pi/auth.json
+configs/pi/models-store.json
+configs/pi/startup.lock

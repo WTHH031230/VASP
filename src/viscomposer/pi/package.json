@@ -1,0 +1,9 @@
+{
+  "name": "vasp-pi-runtime",
+  "private": true,
+  "description": "Pi CLI and Vertex AI Node.js runtime dependencies for VASP.",
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "latest",
+    "google-auth-library": "latest"
+  }
+}

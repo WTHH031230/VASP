@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "poster_id",
+    "paper_title_detected",
+    "paper_alignment",
+    "overall_assessment",
+    "units"
+  ],
+  "properties": {
+    "poster_id": {"type": "string"},
+    "paper_title_detected": {"type": "string"},
+    "paper_alignment": {
+      "type": "string",
+      "enum": ["MATCH", "TITLE_ALIAS_OR_RENAMED", "MISMATCH", "UNCERTAIN"]
+    },
+    "overall_assessment": {"type": "string"},
+    "units": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "unit_id",
+          "verdict",
+          "issue_type",
+          "reasoning",
+          "evidence",
+          "recommended_statement",
+          "confidence"
+        ],
+        "properties": {
+          "unit_id": {"type": "string"},
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "SUPPORTED",
+              "SUPPORTED_WITH_NARROWING",
+              "NOT_FOUND",
+              "CONTRADICTED",
+              "UNREADABLE"
+            ]
+          },
+          "issue_type": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "OVERSTATEMENT",
+              "EXTRA_DETAIL",
+              "NUMERIC_MISMATCH",
+              "CLAIM_MISMATCH",
+              "POSTER_ONLY",
+              "VERSION_MISMATCH",
+              "COMPOUND_PARTIAL_SUPPORT",
+              "UNVERIFIABLE"
+            ]
+          },
+          "reasoning": {"type": "string"},
+          "evidence": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["page", "location", "quote"],
+              "properties": {
+                "page": {"type": "integer", "minimum": 1},
+                "location": {"type": "string"},
+                "quote": {"type": "string"}
+              }
+            }
+          },
+          "recommended_statement": {"type": "string"},
+          "confidence": {"type": "string", "enum": ["HIGH", "MEDIUM", "LOW"]}
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,94 @@
+{
+  "dimension": "aesthetic_element",
+  "dimension_title": "Figure presentation quality",
+  "description": "Poster-level presentation checks for trusted paper-derived figures: nearby captions, displayed figure-text size, and whether a visual's displayed area can carry its visible information complexity.",
+  "system_prompt": "Treat every inserted figure, chart, table, diagram, and image crop as a trusted, immutable asset taken from the source paper. Do not judge source-image resolution, sharpness, compression, pixelation, aspect ratio, internal color encoding, internal contrast, scientific correctness, label-to-mark relationships, connector logic, or any other relationship inside a figure. Judge only the figure asset's poster-level caption association, displayed text size, and displayed area relative to visible information complexity. Do not judge overlaps or general spacing here because the layout dimension handles those properties consistently. Evaluate the single supplied question according to its complete question-specific instructions.",
+  "questions": [
+    {
+      "id": "AE04",
+      "question_type": "gate",
+      "question": "Does every displayed figure have a corresponding caption or short identifying label placed nearby?",
+      "pass_condition": "Each displayed figure has a nearby caption or short label that can be associated with it unambiguously.",
+      "fail_condition": "At least one displayed figure has no nearby caption or identifying label, or the nearest candidate is too far away or ambiguously associated.",
+      "applicability": "Applicable when at least one figure is displayed; otherwise NOT_APPLICABLE. A nearby caption is sufficient; it does not need to state a takeaway.",
+      "weight": 1.0,
+      "critical": true
+    },
+    {
+      "id": "AE13",
+      "question_type": "discriminative",
+      "question": "For each primary method or result figure, is every item of functionally necessary in-figure text displayed at least approximately 30% as tall as the poster's typical body text?",
+      "evaluation_instructions": {
+        "primary_figure_definition": "A primary figure is a figure that visibly carries the poster's core method explanation, key result, or principal evidence. Identify primary figures only from their displayed size, placement, section heading, nearby caption, and visual emphasis. Do not automatically treat every inserted image, logo, decorative visual, or supporting example as primary.",
+        "necessary_text_definition": "Functionally necessary in-figure text is text whose loss of recognizability would prevent a viewer from completing the figure's main communication function on this poster. Infer that function only from the poster's visible heading, nearby caption, placement, size, and emphasis; do not use the source paper or outside knowledge.",
+        "functional_deletion_test": "Mentally hide the candidate text without hiding the surrounding visual. Treat it as necessary when the viewer would then be unable to identify a principal object, distinguish a key condition, decode an essential visual encoding, follow the main process, interpret a key coordinate relationship, or locate the figure's visibly emphasized result.",
+        "likely_inclusions": [
+          "Legend entries, color-category labels, line-style labels, and data-series names when they are needed to decode the figure's principal marks.",
+          "Axis names and units when the variables or quantities are part of the figure's main communication function.",
+          "Representative tick values when the figure's main visible function requires quantitative comparison, scale interpretation, or reading a value range; not every redundant tick must qualify.",
+          "Main node, stage, module, or path labels in a flow diagram, framework diagram, or architecture schematic when they are needed to follow the principal process or structure.",
+          "Condition names, method names, sample categories, or subpanel headings when they are needed to distinguish the figure's principal comparisons.",
+          "Category, condition, or stage labels in an image group when they are needed to understand the central comparison among images.",
+          "Visibly emphasized key numbers, result annotations, or short result statements when they perform the figure's central result-communication function.",
+          "Subpanel identifiers only when a nearby caption or poster-level callout visibly refers to those identifiers and the identifiers are needed to establish the correspondence."
+        ],
+        "likely_exclusions": [
+          "Citations, copyright notices, data-source notes, and watermarks unless the poster visibly makes them part of the figure's central message.",
+          "Logos, branding text, and decorative lettering.",
+          "Repeated labels whose loss would not impair the main interpretation.",
+          "Secondary parameter values, sample IDs, file names, or auxiliary technical details that are not needed for the principal visible message.",
+          "Dense collections of minor values that do not participate in the figure's main comparison.",
+          "Local annotations whose removal would not alter the figure's principal visible function.",
+          "Ordinary superscripts and subscripts as separately undersized text; compare the base characters of the containing text instead.",
+          "Poster body text and captions outside the figure. They may establish the figure's main function but are not themselves measured as in-figure text."
+        ],
+        "typical_body_text_reference": "Use the recurring regular paragraph text in the poster's main content as the typical body-text reference. Exclude the poster title, section headings, figure captions, references, affiliations, footer or contact text, and specially enlarged conclusion or callout text. If ordinary body-text sizes vary slightly, use the most common representative paragraph size.",
+        "comparison_procedure": [
+          "Identify each primary method or result figure.",
+          "State that figure's main visible communication function and apply the functional deletion test to identify its necessary in-figure text.",
+          "For each such figure, locate the smallest displayed item among the necessary text, ignoring normal superscript or subscript reduction.",
+          "Compare the visible height of its base characters with the visible character height of the typical body-text reference."
+        ],
+        "threshold_guidance": "Treat 30% as an approximate visual threshold. A required text item clearly at or above the threshold satisfies the size requirement; one clearly below it violates the requirement. If the smallest required text is too close to the threshold for a reliable visual comparison, or the evidence cannot support the comparison, return UNCERTAIN rather than forcing PASS or FAIL.",
+        "source_asset_scope": "Compare only the displayed character sizes in the attached poster. Do not judge source-image resolution, sharpness, compression, pixelation, scientific correctness, or relationships inside the figure. Do not assume that the figure can be cropped or enlarged separately.",
+        "evidence_requirements": "For PASS, name a representative primary figure, its main function, the smallest necessary text class inspected, and the body-text reference. For FAIL, identify the primary figure, its location, the exact undersized text class, and why that text is functionally necessary. For NOT_APPLICABLE, state which required comparison object is absent."
+      },
+      "pass_condition": "PASS only when every functionally necessary in-figure text item in every applicable primary method or result figure is displayed at least approximately 30% as tall as the poster's typical body text. Do not fail for excluded minor text, ordinary superscript or subscript reduction, or non-primary visuals.",
+      "fail_condition": "FAIL when at least one functionally necessary in-figure text item in a primary method or result figure is clearly displayed below approximately 30% of the typical body-text character height. Identify the figure, location, undersized text class, and the communication function that makes it necessary.",
+      "applicability": "Applicable when at least one primary method or result figure contains functionally necessary in-figure text and representative regular body text is visible. Return NOT_APPLICABLE when no primary figure exists, no primary figure contains functionally necessary in-figure text, or no representative body-text reference is visible. Do not use NOT_APPLICABLE merely because comparison is difficult.",
+      "weight": 1.5,
+      "critical": false
+    },
+    {
+      "id": "IS01",
+      "question_type": "discriminative",
+      "question": "Do the displayed sizes of the poster's information-bearing visuals match their visible information complexity?",
+      "evaluation_instructions": {
+        "definition": "A visual's displayed size matches its information complexity when the poster allocates enough area for the visual's main structure and key details to remain distinguishable. A visual containing more subpanels, text labels, nodes, arrows, data series, axes, legends, or annotations generally requires more display area than a visually simple image.",
+        "relevant_visuals": "Evaluate information-bearing figures, charts, plots, flow diagrams, schematics, and image groups. Ignore logos, branding marks, decorative icons, background ornaments, and purely decorative images.",
+        "scope": "Judge only poster-level displayed size relative to visible complexity. Treat the source visual as a trusted immutable asset: do not judge source resolution, sharpness, compression, pixelation, aspect ratio, scientific correctness, or correctness of relationships inside the visual. Do not infer complexity or importance from the source paper or outside knowledge. When importance matters, infer it only from the poster's visible heading, caption, placement, size, and emphasis.",
+        "relationship_to_AE13": "AE13 separately applies the 30-percent body-text threshold to functionally necessary in-figure text in primary figures, using its functional deletion test. Do not fail IS01 solely because one isolated secondary label appears small or falls below that threshold. Fail IS01 for text-size evidence only when the visual's overall underscaling prevents necessary labels, legends, axes, or annotations from supporting the visual's main information function.",
+        "pass_criteria": [
+          "Visuals containing many subpanels, steps, nodes, arrows, curves, legends, or text labels receive enough display area for their visible complexity.",
+          "The main components within each relevant visual remain visually separable rather than merging into a crowded or indistinguishable detail mass because of underscaling.",
+          "Titles, labels, axes, legends, numbers, and key annotations necessary for the visual's main function are sufficiently discernible at the poster's presented scale; do not assume the reader can crop and enlarge the visual separately.",
+          "Each panel in a multi-panel visual retains enough displayed area for its own main content to be distinguished, rather than only the multi-panel visual's overall silhouette being recognizable.",
+          "A visually simple image may occupy a large area when it clearly serves as a focal element. Its size is a mismatch only when the allocation is visibly purposeless and clearly forces a more complex information-bearing visual into an inadequate area.",
+          "Secondary visuals may be smaller than primary visuals, provided each still has enough displayed area to perform its own visible information function."
+        ],
+        "minor_variation_rule": "Minor details or nonessential labels may be difficult to read without causing FAIL when the visual's main structure, key evidence, and intended visible function remain discernible.",
+        "fail_triggers": [
+          "At least one important or functionally necessary visual contains substantial internal detail but is displayed so small that its main components merge or cannot be distinguished.",
+          "A multi-panel visual is undersized to the point that one or more necessary subpanels communicate only an outline or color block rather than their main content.",
+          "The overall scale of a visual prevents a necessary legend, axis, annotation, structural path, or principal data trend from supporting the visual's main information function.",
+          "A clearly purposeless oversized simple visual consumes space in a way that visibly compresses a more complex, information-bearing visual below a functional size."
+        ]
+      },
+      "pass_condition": "PASS when every important information-bearing visual, and every smaller visual needed for the poster's visible message, has enough displayed area for its main structure and key details to remain distinguishable. Apply the minor-variation rule and do not require all fine print to be readable.",
+      "fail_condition": "FAIL when at least one important or functionally necessary visual is clearly too small for its visible complexity and therefore cannot perform its main information function. Identify the visual, its location, and the specific structure, subpanel, legend, axis, annotation, or data trend made indistinguishable by underscaling.",
+      "applicability": "Applicable when at least one information-bearing visual is displayed; otherwise NOT_APPLICABLE. Do not count logos or decorative imagery as information-bearing visuals.",
+      "weight": 1.5,
+      "critical": false
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "P2P targeted atomic judgement response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dimension", "results", "dimension_summary"],
+  "properties": {
+    "dimension": {
+      "type": "string",
+      "enum": [
+        "aesthetic_element",
+        "aesthetic_engagement",
+        "aesthetic_layout"
+      ]
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "verdict", "evidence", "location", "confidence"],
+        "properties": {
+          "id": {"type": "string", "minLength": 3},
+          "verdict": {
+            "type": "string",
+            "enum": ["PASS", "FAIL", "UNCERTAIN", "NOT_APPLICABLE"]
+          },
+          "evidence": {"type": "string", "minLength": 1},
+          "location": {"type": "string", "minLength": 1},
+          "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+        }
+      }
+    },
+    "dimension_summary": {"type": "string"}
+  }
+}

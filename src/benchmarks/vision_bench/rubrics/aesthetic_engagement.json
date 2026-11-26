@@ -1,0 +1,197 @@
+{
+  "dimension": "aesthetic_engagement",
+  "dimension_title": "Visual engagement",
+  "description": "Professional whole-poster appearance and attention guidance through visual hierarchy, long-distance recognizability, color, restrained decoration, and visible enhancement of concluding information.",
+  "system_prompt": "Judge observable whole-poster attention and engagement properties only, never whether the research topic itself is interesting. Infer information importance only from the poster's visible wording, headings, layout, and emphasis; do not use the source paper or outside knowledge. For color harmony, treat the internal palette and color semantics of each inserted paper-derived figure as trusted and judge only how that figure coexists with the poster-level background, borders, panels, and surrounding colors. Unless the supplied question explicitly provides a derived distance-view stimulus, use direct evidence from the normal poster view and do not simulate a thumbnail view. For DIST01, follow its question-specific stimulus protocol and judge only the attached derived image. Evaluate the single supplied question according to its complete question-specific instructions.",
+  "questions": [
+    {
+      "id": "ENH01",
+      "question_type": "discriminative",
+      "question": "Does the poster have a clear and reasonable visual hierarchy?",
+      "evaluation_instructions": {
+        "definition": "A reasonable visual hierarchy means that information of different apparent importance has a clear and stable priority relationship. Importance must be inferred only from the poster's visible headings, wording, layout, and declared emphasis. A reader should first recognize one main visual focus, then the major sections, key figures, and important findings, and finally the body text, captions, references, and supporting notes.",
+        "identify_three_levels": [
+          "Level 1: the main visual focus that attracts attention first, such as the main title, a concluding message, or a core figure.",
+          "Level 2: major section headings, key figures other than any figure already serving as Level 1, and important results.",
+          "Level 3: ordinary body text, captions, references, and supporting explanations."
+        ],
+        "pass_criteria": [
+          "There is one clear and relatively unique Level-1 focus; several regions do not compete with approximately equal strength for first attention.",
+          "Level-2 elements are visibly subordinate to Level 1 but visibly stronger than ordinary Level-3 text and supporting information.",
+          "Level-3 text and captions remain readable but do not overpower the more important content.",
+          "Visual salience broadly matches the information importance declared by the poster; secondary decoration, logos, references, or minor notes do not appear more prominent than core content.",
+          "Elements serving the same hierarchy level are broadly consistent in font size, weight, color, contrast, and spacing.",
+          "The viewer's attention can move naturally from the main focus to major content and then to supporting information. Judge this attention progression without requiring one fixed column-by-column reading path."
+        ],
+        "minor_variation_rule": "Minor local inconsistencies in size, color, or spacing are acceptable when the main focus, the separation among the three levels, and the overall attention progression remain clear.",
+        "fail_triggers": [
+          "No main visual focus can be identified.",
+          "Multiple regions compete for first attention with approximately equal visual strength.",
+          "Major headings, key figures, or important results are not visibly separated from ordinary body text.",
+          "A secondary element such as decoration, branding, references, or a minor note visibly overpowers core content.",
+          "Elements intended to occupy the same level repeatedly use conflicting visual treatments, making the hierarchy unstable.",
+          "The viewer cannot form a natural attention progression from core information to major content and then supporting information."
+        ]
+      },
+      "pass_condition": "PASS only when the poster has an identifiable and relatively unique first focus, clear separation among the three hierarchy levels, no obvious salience inversion, broadly consistent same-level styling, and a natural attention progression. Minor local inconsistencies are allowed under the stated minor-variation rule.",
+      "fail_condition": "FAIL when any listed fail trigger is clearly visible or when the three hierarchy levels cannot be distinguished reliably. Name the competing, inverted, or inconsistent elements in the evidence.",
+      "applicability": "Always applicable. Base the judgement only on the poster's own visible content and normal-view appearance.",
+      "weight": 1.5,
+      "critical": false
+    },
+    {
+      "id": "DIST01",
+      "question_type": "discriminative",
+      "question": "Does the poster retain good long-distance recognizability when shown at 30% of its original width and height?",
+      "input_transform": {
+        "type": "centered_distance_view",
+        "linear_scale": 0.3,
+        "canvas_size": "source_image_size",
+        "canvas_background": "#7F7F7F",
+        "placement": "center"
+      },
+      "evaluation_instructions": {
+        "stimulus_protocol": "The attached image is a distance-view stimulus. The actual poster is the smaller rectangle centered on a neutral gray canvas. Its width and height are each 30% of the source poster dimensions, so it occupies 9% of the source poster area. The outer gray canvas is not part of the poster. Ignore that canvas completely: do not judge it as poster whitespace, background color, imbalance, or unused area.",
+        "definition": "Good long-distance recognizability means that, even when body text, captions, and details inside charts are difficult or impossible to read, a viewer can still quickly identify the poster's title or topic-entry region, its main visual focus, its core content groups, and the location or visual form of its most important information.",
+        "observation_restrictions": "Use only what is directly visible in the attached distance-view stimulus. Do not zoom, crop, enlarge, enhance, sharpen, use OCR, call tools, inspect files, or reconstruct text that is illegible at this scale. Do not use the source poster or outside knowledge. Recognizing a region as the title entry or a conclusion-like emphasis area does not require reading its exact wording.",
+        "pass_criteria": [
+          "The main title region remains visually prominent and functions as a clear entry point. It is visibly separated from author information, logos, and ordinary body text, even if the exact title wording cannot be read.",
+          "One relatively clear main visual focus remains discoverable, such as a core method figure, key result region, or prominently framed concluding message. The viewer can quickly identify where to look first after the title.",
+          "Major content regions remain distinguishable through columns, panel boundaries, section-heading treatments, color blocks, alignment, or intentional whitespace rather than merging into one continuous mass.",
+          "A visible hierarchy remains among the title, major figures or result regions, section-level content, and supporting body text. Unreadable body text does not visually overpower the more important regions.",
+          "The approximate reading entry, broad progression across the poster, and a conclusion-like or key-result region can be inferred from spatial placement and visual treatment without decoding illegible text.",
+          "The reduced poster does not collapse into a broad continuous gray text wall, nor into many equally weighted tiny boxes, images, and color fragments with no dominant organization.",
+          "At least one key-result or conclusion-like region remains discoverable through its position, scale, contrast, enclosure, or emphasis. The viewer need not read its exact values or sentences."
+        ],
+        "explicit_non_failures": [
+          "Ordinary body text and captions are unreadable at this scale.",
+          "Small labels, legends, axes, and annotations inside figures cannot be distinguished.",
+          "Supporting explanations, references, affiliations, and other auxiliary information visually recede or disappear."
+        ],
+        "verdict_guidance": "Unreadable fine detail is expected and is not a reason to return UNCERTAIN. Return PASS or FAIL from the directly visible structural cues. Use UNCERTAIN only if the centered poster stimulus itself is missing, corrupted, substantially occluded, or otherwise unavailable for structural inspection.",
+        "minor_variation_rule": "Minor ambiguity in one secondary region is acceptable when the title entry, main focus, core groups, and broad reading progression remain clearly recognizable.",
+        "fail_triggers": [
+          "The main title region is not visually identifiable or is mixed with author information, logos, or body text at approximately the same visual strength.",
+          "No principal visual focus survives at the reduced scale, or several regions compete with approximately equal strength for first attention.",
+          "Major content regions merge into an undifferentiated mass and their boundaries cannot be inferred.",
+          "The poster becomes a broad, continuous gray text wall with no strong structural landmarks.",
+          "The poster becomes a collection of many equally weighted tiny panels, images, or color fragments without a clear organizing hierarchy.",
+          "No broad reading entry or progression can be inferred, and no key-result or conclusion-like region is visually discoverable."
+        ]
+      },
+      "pass_condition": "PASS only when the reduced poster still exposes all four essential cues: a clear title or topic-entry region, a main visual focus, distinguishable core content groups, and a broadly inferable reading progression with a discoverable key-result or conclusion-like region. Apply the explicit non-failures and minor-variation rule.",
+      "fail_condition": "FAIL when one or more essential cues are clearly lost and the poster consequently becomes visually flat, merged, fragmented, or directionless at the supplied distance-view scale. Identify the missing cue and its approximate poster region without inferring illegible text.",
+      "applicability": "Always applicable. Judge only the centered 30-percent poster rectangle and ignore the surrounding neutral gray simulation canvas.",
+      "weight": 1.5,
+      "critical": false
+    },
+    {
+      "id": "COL01",
+      "question_type": "discriminative",
+      "question": "Does the academic poster have good overall color harmony?",
+      "evaluation_instructions": {
+        "definition": "Good color harmony means that the poster-level background, primary colors, secondary colors, accent colors, and the colors surrounding inserted visuals form a unified and stable whole through their hue, lightness, saturation, and relative area of use. The poster should not contain clear color conflicts, locally glaring treatments, or several unrelated color systems competing without hierarchy.",
+        "scope": "Judge the poster-level color system: backgrounds, title and heading treatments, panel fills, borders, callouts, decorative elements, and the visible coexistence between inserted visuals and their surroundings. Treat each paper-derived figure, chart, heatmap, or photograph as a trusted immutable asset. Do not judge its internal palette, color encoding, internal color semantics, or scientific correctness. Judge only whether the poster-level colors placed around it create an obvious clash or prevent it from coexisting with the overall poster palette. Infer information importance only from visible headings, wording, placement, size, and emphasis.",
+        "pass_criteria": [
+          "The poster has an identifiable overall color direction: most poster-level headings, borders, backgrounds, and module treatments recur within a recognizable palette rather than each region using an unrelated color system.",
+          "The number and visual strength of the main poster-level colors are controlled. A rich palette is acceptable when colors have a clear hierarchy; many highly saturated colors should not compete across large regions without a dominant system.",
+          "Primary, secondary, and accent colors have observable roles. Primary colors establish the overall style, secondary colors organize or distinguish modules, and the strongest accents are used selectively for emphasis rather than repeatedly dominating large areas.",
+          "Highly saturated or strongly contrasting colors are used with restraint. Vivid color may highlight important content, but several equally intense poster-level regions should not compete for attention.",
+          "Adjacent poster-level color combinations appear visually compatible rather than clearly glaring, muddy, oppressive, or discordant.",
+          "Backgrounds, poster text, icons, rules, and panel fills coexist with sufficient lightness and color separation for the foreground elements to remain visually distinguishable. For inserted figures, judge only their boundary and coexistence with surrounding poster colors, not their internal readability or palette.",
+          "Color-rich figures, heatmaps, charts, or photographs can differ from the poster palette without causing failure when their surrounding panel, border, or background allows them to coexist without an obvious clash.",
+          "Poster-level elements serving the same role, such as peer section headings, repeated module types, or the same type of callout, use broadly consistent color treatments. Do not inspect color consistency or data meaning inside trusted figures.",
+          "The visual intensity of poster-level colors broadly matches the information importance declared by the poster. Secondary decoration, logos, borders, and backgrounds should not appear more chromatically dominant than visibly central methods, findings, or concluding information.",
+          "Monochrome, analogous, complementary, and multicolor schemes are all acceptable. Do not fail a poster merely because it uses few colors, many colors, or strong contrast; judge whether the choices are organized, hierarchical, and unified."
+        ],
+        "minor_variation_rule": "A single figure or chart may use colors that differ from the surrounding palette, and a small accent may be unusually vivid, without causing FAIL when the overall color direction, hierarchy, and visual stability remain intact.",
+        "fail_triggers": [
+          "Prominent poster-level colors form a clearly jarring or discordant combination that disrupts the overall composition.",
+          "Many highly saturated colors occupy substantial regions and compete without a recognizable primary, secondary, and accent hierarchy.",
+          "Major regions appear to use unrelated color systems, making the poster look fragmented or assembled from incompatible templates.",
+          "A local poster-level color block is abnormally intense or visually isolated enough to dominate unrelated core content.",
+          "Background and foreground poster-level colors are too similar for important text, icons, rules, or shapes to remain distinguishable.",
+          "Same-role poster-level elements repeatedly change color without an observable organizational purpose, weakening consistency."
+        ]
+      },
+      "pass_condition": "PASS when the poster-level colors form a recognizable, organized, and stable system with clear hierarchy, compatible adjacent combinations, restrained high-intensity accents, consistent same-role treatments, and no substantial clash with the surroundings of inserted visuals. Apply the minor-variation rule.",
+      "fail_condition": "FAIL when at least one listed fail trigger is clearly visible and materially disrupts overall color unity, hierarchy, stability, or foreground distinction. Identify the specific colors, elements, and poster regions involved rather than giving a general taste-based opinion.",
+      "applicability": "Always applicable, including monochrome posters. A monochrome or strongly contrasting palette is not automatically a failure.",
+      "weight": 1.5,
+      "critical": false
+    },
+    {
+      "id": "EN05",
+      "question_type": "gate",
+      "question": "Do logos, branding, decorative illustrations, and background treatments remain subordinate to the scientific content?",
+      "pass_condition": "No decorative or branding element attracts more attention than the title and primary scientific content or consumes disproportionate space.",
+      "fail_condition": "A logo, banner, illustration, pattern, or background treatment visibly dominates primary scientific content.",
+      "applicability": "Applicable when branding or decorative treatment beyond plain fills and rules is present; otherwise NOT_APPLICABLE.",
+      "weight": 1.0,
+      "critical": true
+    },
+    {
+      "id": "EN07",
+      "question_type": "discriminative",
+      "question": "Does the poster contain at least one visible, substantively complete conclusion-information unit that is clearly visually enhanced relative to nearby ordinary body text and peer non-concluding content?",
+      "evaluation_instructions": {
+        "conclusion_unit_definition": "A conclusion-information unit is a visible textual unit that can communicate a concluding point with enough context to be understood as such from the poster alone. It need not be a grammatically complete sentence, but it must identify enough of the finding, comparison, implication, or takeaway to avoid functioning as an isolated heading, number, or promotional fragment.",
+        "qualifying_functions": [
+          "State a principal finding: what the study visibly reports as having been found.",
+          "State a key comparative result: what method, condition, or object performs differently and in what respect.",
+          "State the implication, consequence, or meaning of a key result.",
+          "State the final takeaway, practical value, recommendation, or message the viewer is meant to retain.",
+          "Present a key quantitative result when its visible label or nearby wording identifies the object, metric, condition, or comparison well enough for the unit to carry a concluding meaning."
+        ],
+        "permitted_forms": "The unit may be a sentence, bullet, short paragraph, callout, result card, labeled metric card, or a caption that explicitly states a takeaway rather than merely describing a visual. It may appear under any heading or without a heading. Do not require the literal words Results, Conclusion, Takeaway, or equivalent fixed section names.",
+        "non_qualifying_content": [
+          "A Results, Conclusion, Takeaway, or similar heading without substantive conclusion content.",
+          "Background, motivation, objective, problem-definition, or method-procedure text that does not state a finding or implication.",
+          "A descriptive caption that only says what a figure contains or shows, without expressing a finding, comparison, implication, or takeaway.",
+          "An isolated number, percentage, arrow, or metric name without enough visible context to identify what it concludes.",
+          "A conclusion that could be obtained only by interpreting a figure, consulting the source paper, or using outside knowledge rather than reading a visible textual unit.",
+          "An isolated promotional fragment such as better, significant improvement, or our method when the object, comparison, or conclusion remains unspecified."
+        ],
+        "candidate_selection": "Scan the whole poster for readable units that satisfy at least one qualifying function. Use only visible wording and local poster context. If several candidates exist, judge whether at least one substantively complete candidate receives sufficient visual enhancement; do not choose a fragment merely because it is already colorful or large.",
+        "visual_enhancement_definition": "Visual enhancement must act on the conclusion-information unit itself or on its core concluding clause, and must make that content clearly more discoverable than nearby ordinary body text and peer non-concluding content. Emphasis applied only to a section heading does not transfer automatically to the conclusion text below it.",
+        "strong_visual_cues": [
+          "The complete conclusion unit is placed in a dedicated callout, result card, or clearly differentiated enclosing panel.",
+          "A distinct background or enclosure clearly separates the complete conclusion unit from ordinary content.",
+          "The complete conclusion unit, not merely its heading or one token, uses type that is clearly and substantially larger than nearby ordinary body text."
+        ],
+        "weak_visual_cues": [
+          "The conclusion unit or its core clause is bold while nearby ordinary body text is not.",
+          "The conclusion unit or its core clause uses a distinct accent color with sufficient contrast.",
+          "The conclusion unit uses a modest but visible size increase over nearby body text.",
+          "Purposeful whitespace or spatial isolation separates the conclusion unit from surrounding prose.",
+          "An arrow, icon, divider, label treatment, or other attention marker points to or frames the conclusion unit.",
+          "Prominent placement supports discovery when combined with another independent cue; placement alone is not sufficient."
+        ],
+        "sufficiency_rule": "The visual enhancement is sufficient only when the conclusion unit has at least one clear strong visual cue or at least two independent weak visual cues. Two instances of the same treatment do not count as two independent cues. A cue is not distinctive when the same treatment is applied broadly to ordinary content across the poster.",
+        "whole_unit_rule": "The enhancement must make the complete conclusion unit or its core concluding clause discoverable. Emphasizing only the section heading, an unexplained number, or one promotional keyword is insufficient when the substantive conclusion remains styled like ordinary body text or buried in a long paragraph.",
+        "scope_boundaries": "Judge only whether visible conclusion information is sufficiently and distinctly enhanced. Do not judge its scientific correctness, completeness with respect to the source paper, strength of evidence, overall poster hierarchy, or overall color harmony. ENH01 handles whole-poster hierarchy and COL01 handles color harmony. A poster may pass EN07 even if those other properties fail, and vice versa.",
+        "pass_criteria": [
+          "At least one readable candidate performs a qualifying conclusion function and contains enough visible context to communicate a substantive concluding point.",
+          "The enhancement acts on the candidate itself or its core concluding clause, not only on a heading or isolated token.",
+          "The candidate has at least one strong visual cue or at least two independent weak visual cues.",
+          "The cues remain visibly distinctive relative to nearby body text and peer non-concluding content rather than being treatments used indiscriminately throughout the poster."
+        ],
+        "fail_triggers": [
+          "Readable conclusion information exists but uses essentially the same visual treatment as nearby ordinary body text.",
+          "Only a Results, Conclusion, Takeaway, or similar heading is emphasized while the substantive conclusion text is not.",
+          "Only an isolated number or keyword is emphasized and the surrounding text needed to understand the conclusion is not enhanced.",
+          "The candidate has only one weak cue and no strong cue, or its apparent cues are too slight to create reliable distinction.",
+          "The same apparent emphasis treatment is used so widely for ordinary content that the conclusion unit is not distinctly discoverable.",
+          "The conclusion remains buried within a long ordinary paragraph and does not form a discoverable unit despite minor local emphasis."
+        ],
+        "uncertainty_guidance": "Return UNCERTAIN when a likely conclusion unit is present but its wording is not readable enough to determine whether it performs a qualifying function, or when image evidence is insufficient to decide whether an apparent cue is visibly distinct. Do not use UNCERTAIN merely because the conclusion is not under a conventional heading.",
+        "evidence_requirements": "For PASS, identify the unit's location, briefly paraphrase its concluding function, and name the strong cue or the two independent weak cues. For FAIL, identify the readable conclusion unit and the exact reason its enhancement is insufficient. For NOT_APPLICABLE, state that no directly visible and readable conclusion-information unit satisfying the definition is present."
+      },
+      "pass_condition": "PASS only when at least one visible, readable, and substantively complete conclusion-information unit is enhanced by at least one clear strong visual cue or at least two independent weak visual cues, and the enhancement makes the unit itself or its core concluding clause distinctly discoverable relative to nearby body text and peer non-concluding content.",
+      "fail_condition": "FAIL when readable conclusion information is present but no qualifying unit receives sufficient distinctive enhancement, including when only a heading, unexplained number, or isolated keyword is emphasized; when only one weak cue is present; when the treatment is used too broadly to distinguish the unit; or when the substantive conclusion remains buried in ordinary prose.",
+      "applicability": "Applicable when at least one directly visible and readable textual unit satisfies the conclusion-unit definition. Return NOT_APPLICABLE when no such unit is present, regardless of section names. Return UNCERTAIN instead when a likely unit exists but its wording or visual treatment cannot be judged reliably from the supplied image. Do not use the source paper or infer a conclusion from a figure alone.",
+      "weight": 1.0,
+      "critical": false
+    }
+  ]
+}

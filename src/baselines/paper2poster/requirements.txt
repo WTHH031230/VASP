@@ -1,0 +1,8 @@
+# Keep the reproduction environment aligned with the checked-out upstream
+# revision instead of maintaining a divergent second dependency list.
+-r ../../../third_party/Paper2Poster/requirements.txt\n
+# The vendored Docling source is 2.20-era code. Its unbounded upstream
+# requirements otherwise resolve to incompatible 7.x parser APIs.
+docling-core==2.20.0
+docling-parse==3.4.0
+docling-ibm-models==3.3.0
