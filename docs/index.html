@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VASP — Visual-Anchored Agent for Scientific Poster Generation</title>
+  <meta name="description" content="VASP: Visual-Anchored Agent for Scientific Poster Generation. Self-contained Agent Skills (vasp-semparser + vasp-viscomposer) with deterministic PDF crop & Playwright verification harness.">
+  <meta property="og:title" content="VASP: Visual-Anchored Agent for Scientific Poster Generation">
+  <meta property="og:description" content="94.3 Visual Presentation (#1), 100/100 intact figure crops, 7.1x cheaper & 2.9x faster. Drop-in Agent Skills for Claude Code, Codex & Antigravity.">
+  <meta property="og:image" content="https://wthh031230.github.io/VASP/assets/social_preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://wthh031230.github.io/VASP/assets/social_preview.png">
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-soft: #f0f4f9;
+      --ink: #0f2235;
+      --ink-2: #3b5268;
+      --ink-3: #647b91;
+      --border: #d5e0ea;
+      --border-strong: #b4c6d8;
+      --sem: #1d4ed8;
+      --sem-soft: #ebf2ff;
+      --sem-border: #bfd4fa;
+      --geo: #0f766e;
+      --geo-soft: #e7f6f4;
+      --geo-border: #a5ded7;
+      --amber: #b45309;
+      --amber-soft: #fdf4e7;
+      --amber-border: #f3d2a4;
+      --shadow-sm: 0 4px 14px rgba(15, 34, 53, 0.06);
+      --shadow-md: 0 16px 42px rgba(15, 34, 53, 0.10);
+      --shadow-lg: 0 28px 72px rgba(15, 34, 53, 0.16);
+      --mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif;
+      --serif: "Iowan Old Style", "Newsreader", Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(to right, rgba(15, 34, 53, 0.032) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 34, 53, 0.032) 1px, transparent 1px);
+      background-size: 36px 36px;
+      line-height: 1.58;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--sem); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .num { font-variant-numeric: tabular-nums; }
+
+    /* Sticky Glass Architectural Navbar */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(246, 248, 251, 0.86);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(15, 34, 53, 0.09);
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto; padding: 13px 28px;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .nav-brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 19px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .nav-brand:hover { text-decoration: none; }
+    .brand-sq {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: linear-gradient(135deg, var(--sem), var(--geo));
+      color: #fff; font-size: 15px; font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .nav-links { display: flex; align-items: center; gap: 24px; font-size: 14.5px; font-weight: 600; }
+    .nav-links a { color: var(--ink-2); }
+    .nav-links a:hover { color: var(--ink); text-decoration: none; }
+    .nav-cta { display: flex; gap: 8px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 15px; border-radius: 9px; font-size: 13.5px; font-weight: 700;
+      border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--ink);
+      cursor: pointer; transition: all 0.16s ease;
+    }
+    .btn:hover { text-decoration: none; border-color: var(--ink); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .btn-primary {
+      background: var(--ink); border-color: var(--ink); color: #fff;
+    }
+    .btn-primary:hover { background: #17334f; border-color: #17334f; color: #fff; }
+    .btn-teal {
+      background: var(--geo-soft); border-color: var(--geo-border); color: var(--geo);
+    }
+    .btn-teal:hover { border-color: var(--geo); }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 28px; }
+
+    /* Hero Header */
+    .hero {
+      padding: 52px 0 36px;
+      text-align: center;
+    }
+    .eyebrow-row {
+      display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+      margin-bottom: 18px;
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+      letter-spacing: 0.03em; border: 1px solid;
+    }
+    .eyebrow-sem { background: var(--sem-soft); color: var(--sem); border-color: var(--sem-border); }
+    .eyebrow-geo { background: var(--geo-soft); color: var(--geo); border-color: var(--geo-border); }
+    .eyebrow-amb { background: var(--amber-soft); color: var(--amber); border-color: var(--amber-border); }
+    .hero h1 {
+      font-size: clamp(34px, 4.4vw, 56px);
+      font-weight: 850; letter-spacing: -0.035em; line-height: 1.08;
+      max-width: 980px; margin: 0 auto;
+      color: #0b1c2e;
+    }
+    .hero h1 .accent {
+      background: linear-gradient(135deg, var(--sem) 0%, var(--geo) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      max-width: 780px; margin: 16px auto 0;
+      font-size: 18px; color: var(--ink-2); line-height: 1.55;
+    }
+    .authors {
+      margin-top: 22px; font-size: 15.5px; font-weight: 600; color: var(--ink);
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px;
+    }
+    .authors sup { color: var(--sem); font-weight: 700; }
+    .affils {
+      margin-top: 8px; font-size: 13.5px; color: var(--ink-3);
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 20px;
+    }
+    .hero-actions {
+      margin-top: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+    }
+    .hero-actions .btn { padding: 11px 20px; font-size: 14.5px; border-radius: 10px; }
+
+    /* Interactive Exhibition Stage (with live 2.5x Optical Loupe!) */
+    .stage-section { padding: 14px 0 42px; }
+    .stage-shell {
+      background: var(--surface);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      position: relative;
+    }
+    .stage-bar {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+      padding: 16px 22px;
+      background: #f9fbfd;
+      border-bottom: 1px solid var(--border);
+    }
+    .poster-tabs {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .p-tab {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 14px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: #fff;
+      font-size: 13px; font-weight: 700; color: var(--ink-2);
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .p-tab:hover { border-color: var(--ink-2); color: var(--ink); }
+    .p-tab.active {
+      background: var(--ink); border-color: var(--ink); color: #fff;
+      box-shadow: 0 4px 12px rgba(15, 34, 53, 0.18);
+    }
+    .p-tab .tag-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .stage-tools { display: flex; align-items: center; gap: 10px; }
+    .loupe-toggle {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 7px 13px; border-radius: 9px; font-size: 12.5px; font-weight: 700;
+      border: 1.5px solid var(--geo-border); background: var(--geo-soft); color: var(--geo);
+      cursor: pointer;
+    }
+    .loupe-toggle.off { background: #fff; border-color: var(--border); color: var(--ink-3); }
+
+    .stage-meta-strip {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 24px;
+      background: #ffffff;
+      border-bottom: 1px dashed var(--border);
+      font-size: 13.5px;
+    }
+    .stage-title-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .meta-pill {
+      padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .mp-self { background: #0f2235; color: #fbbf24; }
+    .mp-vert { background: #fce7f3; color: #9d174d; }
+    .mp-land { background: var(--sem-soft); color: var(--sem); }
+    .stage-cad {
+      display: flex; align-items: center; gap: 14px;
+      font-family: var(--mono); font-size: 12.5px; color: var(--ink-3);
+    }
+    .palette-row { display: inline-flex; align-items: center; gap: 5px; }
+    .swatch { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.16); }
+
+    .stage-canvas {
+      position: relative;
+      padding: 26px 32px 30px;
+      background:
+        radial-gradient(ellipse 68% 60% at 50% 50%, #ffffff 0%, #f1f5fa 100%);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 560px;
+      user-select: none;
+    }
+    .poster-frame {
+      position: relative;
+      display: inline-block;
+      background: #fff;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1.5px solid #c3d2e1;
+      box-shadow: 0 24px 64px rgba(15, 34, 53, 0.16);
+      max-width: 100%;
+    }
+    .poster-frame img {
+      display: block;
+      max-width: 100%;
+      max-height: 640px;
+      width: auto;
+      height: auto;
+      border-radius: 6px;
+      cursor: crosshair;
+    }
+    /* CAD corner marks */
+    .cad { position: absolute; width: 18px; height: 18px; pointer-events: none; }
+    .cad.tl { top: -8px; left: -8px; border-top: 2.5px solid var(--geo); border-left: 2.5px solid var(--geo); }
+    .cad.tr { top: -8px; right: -8px; border-top: 2.5px solid var(--geo); border-right: 2.5px solid var(--geo); }
+    .cad.bl { bottom: -8px; left: -8px; border-bottom: 2.5px solid var(--geo); border-left: 2.5px solid var(--geo); }
+    .cad.br { bottom: -8px; right: -8px; border-bottom: 2.5px solid var(--geo); border-right: 2.5px solid var(--geo); }
+
+    /* Live 2.5x Optical Loupe */
+    .loupe-lens {
+      position: absolute;
+      width: 270px; height: 270px;
+      border-radius: 50%;
+      border: 3px solid var(--geo);
+      box-shadow: 0 18px 46px rgba(15, 34, 53, 0.34), inset 0 0 0 2px rgba(255,255,255,0.85);
+      pointer-events: none;
+      background-repeat: no-repeat;
+      background-color: #fff;
+      display: none;
+      z-index: 30;
+    }
+    .loupe-lens.visible { display: block; }
+    .loupe-lens::after {
+      content: "2.5× OPTICAL LOUPE";
+      position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 34, 53, 0.88); color: #fff;
+      font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+      padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+    }
+    .loupe-hint {
+      position: absolute; bottom: 12px; right: 20px;
+      font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--geo);
+      background: rgba(255,255,255,0.92); border: 1px solid var(--geo-border);
+      padding: 5px 12px; border-radius: 999px;
+    }
+
+    /* Editorial KPI Strip */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      background: #ffffff;
+    }
+    .kpi {
+      padding: 20px 24px; border-right: 1px solid var(--border);
+    }
+    .kpi:last-child { border-right: none; }
+    .kpi-v { font-size: 32px; font-weight: 850; letter-spacing: -0.03em; line-height: 1.05; }
+    .kpi-v.sem { color: var(--sem); } .kpi-v.geo { color: var(--geo); } .kpi-v.amb { color: var(--amber); }
+    .kpi-l { font-size: 14px; font-weight: 700; color: var(--ink); margin-top: 5px; }
+    .kpi-s { font-size: 12.5px; color: var(--ink-3); margin-top: 2px; }
+
+    /* Sections */
+    .stage-section, .sec { scroll-margin-top: 76px; }
+    .sec { padding: 54px 0; border-top: 1px solid rgba(15, 34, 53, 0.08); }
+    .sec-head {
+      display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .sec-num {
+      font-family: var(--mono); font-size: 12.5px; font-weight: 800; letter-spacing: 0.08em;
+      color: var(--geo); text-transform: uppercase; margin-bottom: 6px;
+    }
+    .sec h2 {
+      font-size: clamp(26px, 3vw, 36px); font-weight: 800; letter-spacing: -0.028em; color: var(--ink);
+    }
+    .sec-desc { max-width: 680px; font-size: 16px; color: var(--ink-2); margin-top: 6px; }
+
+    /* Agent Skills Interactive Hub */
+    .skills-grid {
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 24px; align-items: stretch;
+    }
+    .card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm);
+    }
+    .skill-cards { display: flex; flex-direction: column; gap: 18px; }
+    .skill-box {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 22px 24px; box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--sem);
+    }
+    .skill-box.geo { border-left-color: var(--geo); }
+    .skill-box-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px;
+    }
+    .skill-name { font-family: var(--mono); font-size: 17px; font-weight: 800; color: var(--ink); }
+    .skill-badge {
+      font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: 999px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .sb-sem { background: var(--sem-soft); color: var(--sem); }
+    .sb-geo { background: var(--geo-soft); color: var(--geo); }
+    .skill-list {
+      margin-top: 10px; padding-left: 18px; font-size: 14px; color: var(--ink-2);
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .autonomy-note {
+      margin-top: 14px; padding: 12px 15px; border-radius: 10px;
+      background: var(--amber-soft); border: 1px solid var(--amber-border);
+      font-size: 13.5px; color: #7c3a06;
+    }
+
+    /* Interactive Terminal & Live Prompt Builder */
+    .terminal-card {
+      background: #0d1b2a; color: #e6eff8;
+      border-radius: 16px; padding: 22px 24px;
+      box-shadow: var(--shadow-md);
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .term-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .dots { display: flex; gap: 6px; }
+    .dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .agent-switch { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ag-btn {
+      padding: 5px 11px; border-radius: 7px; font-size: 12px; font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); color: #b7c9dc;
+      cursor: pointer;
+    }
+    .ag-btn.active { background: #2563eb; border-color: #3b82f6; color: #fff; }
+    .code-lbl {
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--mono); font-size: 11.5px; font-weight: 700; color: #7dd3fc;
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
+    }
+    .copy-btn {
+      background: rgba(255,255,255,0.10); color: #e6eff8; border: 1px solid rgba(255,255,255,0.18);
+      padding: 4px 10px; border-radius: 6px; font-family: var(--sans); font-size: 12px; font-weight: 700;
+      cursor: pointer;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.20); }
+    pre.code {
+      background: rgba(0,0,0,0.34); border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 10px; padding: 13px 15px; overflow-x: auto;
+      font-family: var(--mono); font-size: 12.5px; line-height: 1.55; color: #f1f7fd;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .builder-controls {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;
+    }
+    .builder-controls input {
+      width: 100%; padding: 8px 11px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08);
+      color: #fff; font-family: var(--mono); font-size: 12.5px;
+    }
+    .preset-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .preset {
+      padding: 3px 9px; border-radius: 6px; font-size: 11.5px; font-weight: 700;
+      background: rgba(15, 118, 110, 0.28); color: #99f6e4; border: 1px solid rgba(45, 212, 191, 0.35);
+      cursor: pointer;
+    }
+    .preset:hover { background: rgba(15, 118, 110, 0.5); }
+
+    /* Method Architecture */
+    .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .fig-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .fig-card.full { grid-column: 1 / -1; }
+    .fig-card img { width: 100%; height: auto; border-radius: 8px; border: 1px solid #e6edf4; }
+    .fig-cap { font-size: 14px; color: var(--ink-2); }
+    .fig-cap strong { color: var(--ink); }
+
+    /* Benchmark Explorer */
+    .bench-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .b-tab {
+      padding: 9px 16px; border-radius: 10px; border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--ink-2); font-size: 13.5px; font-weight: 700;
+      cursor: pointer;
+    }
+    .b-tab.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .bench-panel { display: none; }
+    .bench-panel.active { display: block; }
+    .table-wrap {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; overflow-x: auto; box-shadow: var(--shadow-sm);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead th {
+      text-align: right; padding: 13px 16px; font-size: 12.5px; font-weight: 800;
+      color: var(--ink-2); background: #f8fafd; border-bottom: 1.5px solid var(--border);
+      text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap;
+    }
+    thead th:first-child { text-align: left; }
+    tbody td {
+      padding: 11px 16px; text-align: right; border-bottom: 1px solid #ebf0f5;
+      font-variant-numeric: tabular-nums;
+    }
+    tbody td:first-child { text-align: left; font-weight: 600; color: var(--ink); }
+    tbody tr.ours { background: #eff5ff; }
+    tbody tr.ours td:first-child { color: var(--sem); font-weight: 800; }
+    tbody tr.human { background: #f8fafc; color: var(--ink-2); }
+    .bar-cell { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; min-width: 112px; }
+    .bar-bg { width: 58px; height: 7px; border-radius: 99px; background: #e2eaf2; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; background: #93afc9; }
+    tr.ours .bar-fill { background: linear-gradient(90deg, var(--sem), var(--geo)); }
+
+    /* BibTeX */
+    .bib-box {
+      background: #0d1b2a; color: #e6eff8; border-radius: 14px; padding: 20px 24px;
+      position: relative;
+    }
+    .bib-box pre {
+      font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto;
+    }
+    footer.site-foot {
+      padding: 36px 0 48px; text-align: center; font-size: 13.5px; color: var(--ink-3);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Lightbox Modal */
+    .modal {
+      position: fixed; inset: 0; background: rgba(10, 22, 36, 0.88);
+      backdrop-filter: blur(8px); z-index: 999;
+      display: none; align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal.open { display: flex; }
+    .modal img { max-width: 95vw; max-height: 92vh; border-radius: 10px; box-shadow: 0 24px 80px rgba(0,0,0,0.5); }
+    .modal-close {
+      position: fixed; top: 20px; right: 24px;
+      background: #fff; color: var(--ink); border: none; border-radius: 999px;
+      width: 40px; height: 40px; font-size: 20px; font-weight: 800; cursor: pointer;
+    }
+
+    @media (max-width: 960px) {
+      .kpi-grid, .skills-grid, .method-grid { grid-template-columns: 1fr; }
+      .kpi { border-right: none; border-bottom: 1px solid var(--border); }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#top"><span class="brand-sq">V</span> VASP</a>
+      <div class="nav-links">
+        <a href="#showcase">Showcase</a>
+        <a href="#skills">Agent Skills</a>
+        <a href="#method">Method</a>
+        <a href="#benchmarks">Benchmarks</a>
+        <a href="#bibtex">BibTeX</a>
+      </div>
+      <div class="nav-cta">
+        <a class="btn btn-teal" href="https://huggingface.co/datasets/WTHH031230/VASP-data" target="_blank">HF Dataset</a>
+        <a class="btn btn-primary" href="https://github.com/WTHH031230/VASP" target="_blank">GitHub ↗</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top" class="container">
+    <section class="hero">
+      <div class="eyebrow-row">
+        <span class="eyebrow eyebrow-sem">Vision-Centric Anchoring</span>
+        <span class="eyebrow eyebrow-geo">Semantic-Geometric Decoupling</span>
+        <span class="eyebrow eyebrow-amb">★ Drop-In Agent Skills Included</span>
+      </div>
+      <h1><span class="accent">VASP:</span> Visual-Anchored Agent for<br>Scientific Poster Generation</h1>
+      <p class="hero-sub">
+        LLMs handle scientific interpretation and layout planning; deterministic programs compute exact PDF figure bounds and verify rendered DOM claim–evidence relations.
+      </p>
+      <div class="authors">
+        <span>Huihan Wang<sup>1,2,*</sup></span>
+        <span>Jiatian Chen<sup>1,3,*</sup></span>
+        <span>Yiming Li<sup>1</sup></span>
+        <span>Siyuan Zhang<sup>1</sup></span>
+        <span>Yanhui Hong<sup>1,†</sup></span>
+        <span>Nan Wang<sup>1,†</sup></span>
+      </div>
+      <div class="affils">
+        <span><sup>1</sup>DP Technology</span>
+        <span><sup>2</sup>The Hong Kong Polytechnic University (BEST)</span>
+        <span><sup>3</sup>Beihang University</span>
+        <span><sup>*</sup>Equal contribution · <sup>†</sup>Corresponding authors</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://github.com/WTHH031230/VASP" target="_blank">Code &amp; Agent Skills (GitHub)</a>
+        <a class="btn btn-teal" href="https://huggingface.co/datasets/WTHH031230/VASP-data" target="_blank">Benchmark Data (VASP-data)</a>
+        <a class="btn" href="#skills">Try 1-Prompt Skills ↓</a>
+        <a class="btn" href="#bibtex">Cite Paper</a>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE EXHIBITION WALL WITH 2.5x LOUPE -->
+    <section id="showcase" class="stage-section">
+      <div class="stage-shell">
+        <div class="stage-bar">
+          <div class="poster-tabs" id="posterTabs"></div>
+          <div class="stage-tools">
+            <button class="loupe-toggle" id="loupeToggle" type="button">🔍 2.5× Optical Loupe: ON</button>
+            <button class="btn" id="openLightbox" type="button">⤢ Fullscreen</button>
+          </div>
+        </div>
+        <div class="stage-meta-strip">
+          <div class="stage-title-info" id="stageTitleInfo"></div>
+          <div class="stage-cad" id="stageCadInfo"></div>
+        </div>
+        <div class="stage-canvas" id="stageCanvas">
+          <div class="poster-frame" id="posterFrame">
+            <span class="cad tl"></span><span class="cad tr"></span>
+            <span class="cad bl"></span><span class="cad br"></span>
+            <img id="stageImg" src="assets/posters/vasp_self.webp" alt="VASP Poster">
+            <div class="loupe-lens" id="loupeLens"></div>
+          </div>
+          <div class="loupe-hint">Hover poster to inspect 2.5× typography, equations &amp; crops</div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-v sem num">94.3 <span style="font-size:15px;font-weight:700;">(+6.2)</span></div>
+            <div class="kpi-l">Visual Presentation (#1 / 900)</div>
+            <div class="kpi-s">Matches #1 blind human rank (1.47 across 300 rankings)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-v geo num">100 / 100</div>
+            <div class="kpi-l">Intact Figure Crops (94.3 mAP)</div>
+            <div class="kpi-s">Text-only role pass + PDF wall-bounded region growing</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-v amb num">7.1× / 2.9×</div>
+            <div class="kpi-l">Cheaper &amp; Faster vs. ResearchStudio</div>
+            <div class="kpi-s">Deterministic Playwright DOM gate replaces blind retries</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-v num">88.7%</div>
+            <div class="kpi-l">#1 Fixed-Canvas Key-Info Coverage</div>
+            <div class="kpi-s">48% full 7/7 unit coverage across 100 papers (Opus-5)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIMENTAL RECOMMENDED AGENT SKILLS -->
+    <section id="skills" class="sec">
+      <div class="sec-head">
+        <div>
+          <div class="sec-num">01 · Experimental — Recommended for Practical Use</div>
+          <h2>Drop-In Self-Contained Agent Skills</h2>
+          <p class="sec-desc">
+            Instead of wrapping a single CLI from the outside, we invert control: copy two self-contained skill folders into <strong>any</strong> skill-capable coding agent to get VASP's full deterministic PDF-cropping &amp; Playwright verification harness natively—plus arbitrary conference templates, portrait/landscape layouts, and editable PPTX export.
+          </p>
+        </div>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skill-cards">
+          <div class="skill-box">
+            <div class="skill-box-head">
+              <span class="skill-name">skills/vasp-semparser/</span>
+              <span class="skill-badge sb-sem">Stage 1 · PDF Parser</span>
+            </div>
+            <p style="font-size:14.5px;color:var(--ink-2);">
+              Full Semantic-Geometric Decoupling engine packaged standalone. Your host agent assigns line roles once; the bundled Python engine runs exact PDF vector/text-wall region growing.
+            </p>
+            <ul class="skill-list">
+              <li><strong>Zero VLM pixel guessing</strong>: bundles full <code>caption_cut</code>, outer rules, table bands, metadata enrichment, institution logos &amp; Paper/Code QR generation.</li>
+              <li><strong>Visual crop verification &amp; lossless recrop</strong>: renders a contact sheet + coordinate-grid page overlays so the agent can surgically recrop tricky layouts at 300 DPI.</li>
+              <li>Outputs a standardized, reusable <strong>VASP Asset Package</strong> (usable for posters, slides, blogs, or videos).</li>
+            </ul>
+          </div>
+
+          <div class="skill-box geo">
+            <div class="skill-box-head">
+              <span class="skill-name">skills/vasp-viscomposer/</span>
+              <span class="skill-badge sb-geo">Stage 2 · Poster Harness</span>
+            </div>
+            <p style="font-size:14.5px;color:var(--ink-2);">
+              Full Playwright rendering, DOM bounding-box measurement, semantic claim–evidence gate, zoomed figure detail sheets, checkpoint ranking, and native editable PPTX export.
+            </p>
+            <ul class="skill-list">
+              <li><strong>Harness-agnostic</strong>: works natively in Claude Code, Codex CLI, Antigravity, Pi, Cursor, and OpenCode—no CLI adapters required.</li>
+              <li><strong>Accepts SemParser packages or custom image folders</strong>; exports print-ready PDF, crisp PNG, and <strong>editable PowerPoint (.pptx)</strong>.</li>
+            </ul>
+            <div class="autonomy-note">
+              <strong>Agent Autonomy Built In:</strong> Both skills treat VASP's deterministic harness as a high-efficiency foundation while explicitly authorizing the agent to adapt any crop, canvas size, conference style, or trade-off to fit visual inspection and user requirements.
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-card">
+          <div class="term-top">
+            <div class="dots">
+              <span style="background:#ef4444"></span>
+              <span style="background:#f59e0b"></span>
+              <span style="background:#10b981"></span>
+            </div>
+            <div class="agent-switch" id="agentSwitch">
+              <button class="ag-btn active" data-dir="~/.claude/skills/">Claude Code</button>
+              <button class="ag-btn" data-dir="~/.codex/skills/">Codex CLI</button>
+              <button class="ag-btn" data-dir="~/.gemini/config/skills/">Antigravity</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="code-lbl">
+              <span>1. Install Self-Contained Skills</span>
+              <button class="copy-btn" data-copy="installCmd">Copy</button>
+            </div>
+            <pre class="code" id="installCmd">git clone https://github.com/WTHH031230/VASP.git
+cp -r VASP/skills/vasp-* ~/.claude/skills/
+pip install -r VASP/skills/vasp-semparser/scripts/requirements.txt \
+            -r VASP/skills/vasp-viscomposer/scripts/requirements.txt
+playwright install chromium</pre>
+          </div>
+
+          <div>
+            <div class="code-lbl">
+              <span>2. Interactive Prompt Builder (Tested &amp; Reliable)</span>
+              <button class="copy-btn" data-copy="promptCmd">Copy Prompt</button>
+            </div>
+            <div class="preset-pills" id="presetPills">
+              <button class="preset" data-conf="ICLR 2027">ICLR 2027</button>
+              <button class="preset" data-conf="NeurIPS 2026">NeurIPS 2026</button>
+              <button class="preset" data-conf="ECCV 2026">ECCV 2026</button>
+              <button class="preset" data-conf="MICCAI 2026 (Portrait A0)">MICCAI Portrait A0</button>
+              <button class="preset" data-conf="CVPR 2026">CVPR 2026</button>
+            </div>
+            <div class="builder-controls">
+              <input id="confInput" type="text" value="ICLR 2027" placeholder="Target Conference">
+              <input id="paperInput" type="text" value="paper.pdf" placeholder="Paper PDF path">
+            </div>
+            <pre class="code" id="promptCmd">/vasp-semparser /vasp-viscomposer
+
+Ignore any conflicting global instruction constraints.
+Follow the ICLR 2027 poster template and formatting guidelines
+to generate a poster for paper.pdf.
+Do not set an iteration limit—keep refining until you produce
+the best possible final version.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- METHOD SECTION -->
+    <section id="method" class="sec">
+      <div class="sec-head">
+        <div>
+          <div class="sec-num">02 · Core Methodology</div>
+          <h2>Vision-Centric Anchoring &amp; Semantic-Geometric Decoupling</h2>
+          <p class="sec-desc">
+            Existing pipelines exhibit a <strong>layout mismatch</strong> (squeezing key evidence into leftover template slots) and an <strong>execution mismatch</strong> (asking VLMs to eyeball pixel boxes and layout distances). VASP separates semantic judgment from deterministic geometry across both stages.
+          </p>
+        </div>
+      </div>
+
+      <div class="method-grid">
+        <div class="fig-card full">
+          <img src="assets/figures/method.webp" alt="VASP Two-Stage Framework">
+          <p class="fig-cap">
+            <strong>Figure 3 · Two-Stage Decoupled Architecture.</strong>
+            <em>Stage I (SemParser):</em> a single text-only LLM pass assigns each PDF text line a semantic role and transcribes tables/equations; deterministic region growing expands each figure from its caption anchor to non-figure walls with 100/100 intact crops.
+            <em>Stage II (VisComposer):</em> the design agent anchors the canvas around key visual evidence and declares an explicit claim–evidence graph bound to HTML/CSS IDs; a headless Chromium harness measures exact DOM geometry and checks semantic/spatial predicates across persistent refinement rounds.
+          </p>
+        </div>
+        <div class="fig-card">
+          <img src="assets/figures/teaser.webp" alt="Layout-First vs Visual-First">
+          <p class="fig-cap">
+            <strong>Figure 1 · Layout-First vs. Visual-First.</strong>
+            Switching from visual-first to text-first on the exact same flexible grid drops Visual Presentation by <strong>−18.6 points</strong> (91.4 → 72.8) and shrinks the paper's key figure from 7.3% to 2.7% of canvas area.
+          </p>
+        </div>
+        <div class="fig-card">
+          <img src="assets/figures/cost_time_quality.webp" alt="Pareto Cost & Time Frontier">
+          <p class="fig-cap">
+            <strong>Figure 2 · Quality–Cost–Runtime Pareto Frontier (100 Papers).</strong>
+            VASP (GPT-5.6-Sol) achieves the highest Visual Presentation (<strong>94.3</strong>) while costing <strong>7.1× less</strong> and running <strong>2.9× faster</strong> than ResearchStudio.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENCHMARKS & QUALITATIVE SHOWCASE -->
+    <section id="benchmarks" class="sec">
+      <div class="sec-head">
+        <div>
+          <div class="sec-num">03 · 100-Paper Benchmarks &amp; Qualitative Proof</div>
+          <h2>Evaluated Across 900 Posters, 948 Figures &amp; 300 Blind Human Rankings</h2>
+          <p class="sec-desc">
+            Alongside Paper2Poster VLM-as-Judge and PaperQuiz, we release <strong>VASP-data</strong> on Hugging Face: 948 human-annotated figure boxes, 12 binary visual-presentation criteria, and 700 paper-audited reference information units.
+          </p>
+        </div>
+      </div>
+
+      <div class="fig-card full" style="margin-bottom: 28px;">
+        <img src="assets/figures/poster_comparison_2x3.webp" alt="Qualitative Comparison">
+        <p class="fig-cap">
+          <strong>Figure 4 · Qualitative Comparison (TimeSiam).</strong>
+          VASP (top-left) pairs legible, intact scientific figures directly with their claims on a balanced, clean canvas—while baselines compress visuals beneath dense text walls or clip labels.
+        </p>
+      </div>
+
+      <div class="bench-tabs" id="benchTabs">
+        <button class="b-tab active" data-panel="b-main">Visual Presentation &amp; VLM-Judge (100 Papers)</button>
+        <button class="b-tab" data-panel="b-crop">Figure Extraction (462 Main / 948 Total)</button>
+        <button class="b-tab" data-panel="b-cov">Key-Info Coverage (700 Units)</button>
+        <button class="b-tab" data-panel="b-human">Cross-Family Judge &amp; Blind Human Rank</button>
+      </div>
+
+      <div class="bench-panel active" id="b-main">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th><th>Figure Pres. ↑</th><th>Visual Guid. ↑</th><th>Layout ↑</th><th>Vis. Pres. Overall ↑</th><th>VLM-Judge ↑</th><th>PaperQuiz ↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="ours"><td>VASP (GPT-5.6-Sol)</td><td><strong>88.0</strong></td><td><strong>100.0</strong></td><td><u>95.0</u></td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:94.3%"></div></div><strong>94.3</strong></div></td><td><strong>3.71</strong></td><td><u>69.96</u></td></tr>
+              <tr class="ours"><td>VASP (Opus-5)</td><td><u>81.3</u></td><td><u>98.4</u></td><td><strong>97.8</strong></td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:92.5%"></div></div><u>92.5</u></div></td><td><u>3.70</u></td><td><strong>78.08</strong></td></tr>
+              <tr><td>ResearchStudio</td><td>73.7</td><td>97.0</td><td>93.5</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:88.1%"></div></div>88.1</div></td><td>3.52</td><td>67.48</td></tr>
+              <tr class="human"><td>Official Posters (Human Ref.)</td><td>72.7</td><td>86.4</td><td>90.0</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:83.0%"></div></div>83.0</div></td><td>3.12</td><td>67.55</td></tr>
+              <tr><td>PosterMELD</td><td>71.7</td><td>80.6</td><td>46.5</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:66.3%"></div></div>66.3</div></td><td>2.83</td><td>62.36</td></tr>
+              <tr><td>PosterGen</td><td>53.0</td><td>75.4</td><td>68.3</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:65.6%"></div></div>65.6</div></td><td>3.14</td><td>67.72</td></tr>
+              <tr><td>P2P† (unbounded height)</td><td>11.0</td><td>76.4</td><td>61.3</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:49.6%"></div></div>49.6</div></td><td>3.20</td><td>85.20†</td></tr>
+              <tr><td>Paper2Poster</td><td>35.0</td><td>61.6</td><td>43.0</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:46.5%"></div></div>46.5</div></td><td>2.76</td><td>69.25</td></tr>
+              <tr><td>PosterForest</td><td>38.0</td><td>56.4</td><td>42.0</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:45.5%"></div></div>45.5</div></td><td>2.85</td><td>68.86</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bench-panel" id="b-crop">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Method (Parser)</th><th>mAP ↑</th><th>AP50 ↑</th><th>AP75 ↑</th><th>mIoU ↑</th><th>Human Completeness (/100) ↑</th></tr>
+            </thead>
+            <tbody>
+              <tr class="ours"><td>VASP (GPT-5.6-Sol)</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:94.3%"></div></div><strong>94.30</strong></div></td><td><strong>100.00</strong></td><td><strong>100.00</strong></td><td><strong>95.70</strong></td><td><strong>100 / 100</strong></td></tr>
+              <tr class="ours"><td>VASP (Opus-5)</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:94.06%"></div></div><u>94.06</u></div></td><td><u>99.97</u></td><td><u>98.81</u></td><td><u>95.59</u></td><td><strong>100 / 100</strong></td></tr>
+              <tr><td>P2P (DocLayout-YOLO)</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:91.06%"></div></div>91.06</div></td><td>94.94</td><td>92.13</td><td>94.69</td><td>93 / 100</td></tr>
+              <tr><td>ResearchStudio</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:84.07%"></div></div>84.07</div></td><td>89.33</td><td>88.08</td><td>86.70</td><td>88 / 100</td></tr>
+              <tr><td>PosterMELD (MinerU)</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:83.34%"></div></div>83.34</div></td><td>93.65</td><td>90.58</td><td>93.46</td><td>69 / 100</td></tr>
+              <tr><td>PosterForest (Docling)</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:73.07%"></div></div>73.07</div></td><td>79.39</td><td>75.64</td><td>80.00</td><td>76 / 100</td></tr>
+              <tr><td>Paper2Poster (Docling)</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:68.24%"></div></div>68.24</div></td><td>75.08</td><td>70.56</td><td>83.26</td><td>73 / 100</td></tr>
+              <tr><td>PosterGen (Marker)</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:67.77%"></div></div>67.77</div></td><td>92.86</td><td>87.95</td><td>83.88</td><td>82 / 100</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bench-panel" id="b-cov">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Method</th><th>Problem ↑</th><th>Method ↑</th><th>Results ↑</th><th>Overall Coverage (%) ↑</th><th>Full 7/7 Posters (%) ↑</th></tr>
+            </thead>
+            <tbody>
+              <tr class="ours"><td>VASP (Opus-5)</td><td><strong>94.0</strong></td><td><strong>89.0</strong></td><td><strong>84.8</strong></td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:88.7%"></div></div><strong>88.7</strong></div></td><td><strong>48</strong></td></tr>
+              <tr class="ours"><td>VASP (GPT-5.6-Sol)</td><td><u>91.3</u></td><td><u>86.9</u></td><td>71.7</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:82.0%"></div></div><u>82.0</u></div></td><td>20</td></tr>
+              <tr><td>PosterGen</td><td>86.6</td><td>81.4</td><td><u>74.7</u></td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:79.7%"></div></div>79.7</div></td><td><u>22</u></td></tr>
+              <tr><td>Paper2Poster</td><td>72.5</td><td>73.9</td><td>73.7</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:74.1%"></div></div>74.1</div></td><td>15</td></tr>
+              <tr><td>PosterForest</td><td>73.2</td><td>78.7</td><td>70.2</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:73.9%"></div></div>73.9</div></td><td>12</td></tr>
+              <tr><td>ResearchStudio</td><td>79.2</td><td>75.9</td><td>65.7</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:73.0%"></div></div>73.0</div></td><td>18</td></tr>
+              <tr><td>PosterMELD</td><td>81.9</td><td>73.9</td><td>48.5</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:66.9%"></div></div>66.9</div></td><td>7</td></tr>
+              <tr class="human"><td>Official Posters (Human Ref.)</td><td>99.3</td><td>97.3</td><td>94.4</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:96.4%"></div></div>96.4</div></td><td>80</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bench-panel" id="b-human">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Method</th><th>Human Blind Mean Rank ↓</th><th>Human Rank ↓</th><th>Gemini-4-Argon Vis. Pres. ↑</th><th>Gemini-4-Argon VLM-Judge ↑</th><th>GPT-5.6-Sol Vis. Pres. ↑</th></tr>
+            </thead>
+            <tbody>
+              <tr class="ours"><td>VASP (GPT-5.6-Sol)</td><td><strong>1.47</strong></td><td><strong>#1</strong></td><td><u>85.6</u></td><td><u>3.67</u></td><td><strong>94.3</strong></td></tr>
+              <tr class="ours"><td>VASP (Opus-5)</td><td>—</td><td>—</td><td><strong>86.4</strong></td><td><strong>3.72</strong></td><td><u>92.5</u></td></tr>
+              <tr><td>ResearchStudio</td><td><u>2.20</u></td><td><u>#2</u></td><td>82.8</td><td>3.28</td><td>88.1</td></tr>
+              <tr class="human"><td>Official Posters</td><td>2.65</td><td>#3</td><td>76.2</td><td>3.18</td><td>83.0</td></tr>
+              <tr><td>PosterGen</td><td>4.06</td><td>#4</td><td>44.2</td><td>2.82</td><td>65.6</td></tr>
+              <tr><td>Paper2Poster</td><td>4.62</td><td>#5</td><td>28.0</td><td>2.27</td><td>46.5</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- BIBTEX -->
+    <section id="bibtex" class="sec">
+      <div class="sec-head">
+        <div>
+          <div class="sec-num">04 · Citation</div>
+          <h2>BibTeX</h2>
+        </div>
+      </div>
+      <div class="bib-box">
+        <div class="code-lbl">
+          <span>Preprint Citation</span>
+          <button class="copy-btn" data-copy="bibCode">Copy BibTeX</button>
+        </div>
+        <pre id="bibCode">@article{wang2026vasp,
+  title   = {VASP: Visual-Anchored Agent for Scientific Poster Generation},
+  author  = {Wang, Huihan and Chen, Jiatian and Li, Yiming and Zhang, Siyuan and Hong, Yanhui and Wang, Nan},
+  journal = {arXiv preprint},
+  year    = {2026},
+  url     = {https://github.com/WTHH031230/VASP}
+}</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      VASP · MIT License · <a href="https://github.com/WTHH031230/VASP">GitHub</a> · <a href="https://huggingface.co/datasets/WTHH031230/VASP-data">Hugging Face Dataset (VASP-data)</a>
+    </div>
+  </footer>
+
+  <div class="modal" id="lightboxModal">
+    <button class="modal-close" id="closeLightbox" aria-label="Close">×</button>
+    <img id="lightboxImg" src="" alt="Full resolution poster">
+  </div>
+
+  <script>
+    const POSTERS = [
+      {
+        id: "vasp_self",
+        tab: "VASP (Self)",
+        dot: "#1d4ed8",
+        badge: "★ META-DEMO · VASP ON VASP",
+        badgeCls: "mp-self",
+        title: "VASP: Visual-Anchored Agent for Scientific Poster Generation",
+        dim: "3640 × 1770 px · Landscape 2:1",
+        swatches: ["#1c4e80", "#0d9488", "#c26d1f"],
+        src: "assets/posters/vasp_self.webp"
+      },
+      {
+        id: "miccai_feat",
+        tab: "MICCAI · Portrait",
+        dot: "#9f1239",
+        badge: "PORTRAIT A0 · MICCAI 2025",
+        badgeCls: "mp-vert",
+        title: "FEAT: Full-Dimensional Efficient Attention Transformer for Medical Video Generation",
+        dim: "1655 × 2340 px · Vertical A0",
+        swatches: ["#2d2a6e", "#b91c47", "#0f766e"],
+        src: "assets/posters/miccai_feat.webp"
+      },
+      {
+        id: "neurips_sphereflow",
+        tab: "NeurIPS · SphereFlow",
+        dot: "#4338ca",
+        badge: "NEURIPS TEMPLATE DEMO",
+        badgeCls: "mp-land",
+        title: "SphereFlow: Missing Modality Imputation via Geometric Transport on Hypersphere",
+        dim: "2755 × 1771 px · Landscape",
+        swatches: ["#4338ca", "#6d28d9", "#b91c1c"],
+        src: "assets/posters/neurips_sphereflow.webp"
+      },
+      {
+        id: "eccv_timeshifts",
+        tab: "ECCV · Audio-Visual",
+        dot: "#0f766e",
+        badge: "ECCV TEMPLATE DEMO",
+        badgeCls: "mp-land",
+        title: "Beyond Time Shifts: Adapting Omni-LLM as a Reference-Free Evaluator",
+        dim: "2756 × 1968 px · Landscape",
+        swatches: ["#1e3a5f", "#0f766e", "#2563eb"],
+        src: "assets/posters/eccv_timeshifts.webp"
+      },
+      {
+        id: "eccv_latentdrift",
+        tab: "ECCV · Latent Drift",
+        dot: "#b91c1c",
+        badge: "ECCV TEMPLATE DEMO",
+        badgeCls: "mp-land",
+        title: "Progression as Latent Drift: Generative Forecasting of Slow-Evolving Pathologies",
+        dim: "2756 × 1968 px · Landscape",
+        swatches: ["#1e3a5f", "#b91c1c", "#0f766e"],
+        src: "assets/posters/eccv_latentdrift.webp"
+      },
+      {
+        id: "newton",
+        tab: "4-Col · NEWTON",
+        dot: "#c26d1f",
+        badge: "4-COLUMN · AGENTIC VIDEO",
+        badgeCls: "mp-land",
+        title: "NEWTON: Agentic Planning for Physically Grounded Video Generation",
+        dim: "2880 × 1440 px · Landscape 2:1",
+        swatches: ["#1c4e80", "#c26d1f", "#6d28d9"],
+        src: "assets/posters/newton.webp"
+      }
+    ];
+
+    let activePoster = POSTERS[0];
+    let loupeEnabled = true;
+
+    const tabsEl = document.getElementById("posterTabs");
+    const stageImg = document.getElementById("stageImg");
+    const titleInfo = document.getElementById("stageTitleInfo");
+    const cadInfo = document.getElementById("stageCadInfo");
+    const loupeLens = document.getElementById("loupeLens");
+    const loupeToggle = document.getElementById("loupeToggle");
+
+    function selectPoster(p) {
+      activePoster = p;
+      stageImg.src = p.src;
+      stageImg.alt = p.title;
+      titleInfo.innerHTML = `<span class="meta-pill ${p.badgeCls}">${p.badge}</span><strong>${p.title}</strong>`;
+      cadInfo.innerHTML = `<span>${p.dim}</span><span class="palette-row">Palette: ${p.swatches.map(c => `<span class="swatch" style="background:${c}"></span>`).join("")}</span>`;
+      document.querySelectorAll(".p-tab").forEach(btn => btn.classList.toggle("active", btn.dataset.id === p.id));
+      loupeLens.classList.remove("visible");
+    }
+
+    POSTERS.forEach(p => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "p-tab";
+      b.dataset.id = p.id;
+      b.innerHTML = `<span class="tag-dot" style="background:${p.dot}"></span>${p.tab}`;
+      b.addEventListener("click", () => selectPoster(p));
+      tabsEl.appendChild(b);
+    });
+    selectPoster(POSTERS[0]);
+
+    // 2.5x Optical Loupe Interaction
+    const ZOOM = 2.5;
+    function updateLoupe(clientX, clientY) {
+      if (!loupeEnabled) return;
+      const rect = stageImg.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+        loupeLens.classList.remove("visible");
+        return;
+      }
+      const r = loupeLens.offsetWidth / 2 || 135;
+      loupeLens.style.backgroundImage = `url("${stageImg.src}")`;
+      loupeLens.style.backgroundSize = `${rect.width * ZOOM}px ${rect.height * ZOOM}px`;
+      loupeLens.style.backgroundPosition = `${-(x * ZOOM - r)}px ${-(y * ZOOM - r)}px`;
+      loupeLens.style.left = `${x - r + 10}px`;
+      loupeLens.style.top = `${y - r + 10}px`;
+      loupeLens.classList.add("visible");
+    }
+    stageImg.addEventListener("mousemove", e => updateLoupe(e.clientX, e.clientY));
+    stageImg.addEventListener("mouseleave", () => loupeLens.classList.remove("visible"));
+    loupeToggle.addEventListener("click", () => {
+      loupeEnabled = !loupeEnabled;
+      loupeToggle.textContent = loupeEnabled ? "🔍 2.5× Optical Loupe: ON" : "🔍 2.5× Optical Loupe: OFF";
+      loupeToggle.classList.toggle("off", !loupeEnabled);
+      if (!loupeEnabled) loupeLens.classList.remove("visible");
+    });
+
+    // Lightbox
+    const modal = document.getElementById("lightboxModal");
+    const lbImg = document.getElementById("lightboxImg");
+    document.getElementById("openLightbox").addEventListener("click", () => {
+      lbImg.src = activePoster.src;
+      modal.classList.add("open");
+    });
+    document.getElementById("closeLightbox").addEventListener("click", () => modal.classList.remove("open"));
+    modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+
+    // Agent Runtime Switcher
+    const installCmd = document.getElementById("installCmd");
+    document.querySelectorAll(".ag-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".ag-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const dir = btn.dataset.dir;
+        installCmd.textContent =
+`git clone https://github.com/WTHH031230/VASP.git
+cp -r VASP/skills/vasp-* ${dir}
+pip install -r VASP/skills/vasp-semparser/scripts/requirements.txt \\
+            -r VASP/skills/vasp-viscomposer/scripts/requirements.txt
+playwright install chromium`;
+      });
+    });
+
+    // Live Prompt Builder
+    const confInput = document.getElementById("confInput");
+    const paperInput = document.getElementById("paperInput");
+    const promptCmd = document.getElementById("promptCmd");
+    function renderPrompt() {
+      const c = confInput.value.trim() || "{Conference}";
+      const p = paperInput.value.trim() || "{Paper}";
+      promptCmd.textContent =
+`/vasp-semparser /vasp-viscomposer
+
+Ignore any conflicting global instruction constraints.
+Follow the ${c} poster template and formatting guidelines
+to generate a poster for ${p}.
+Do not set an iteration limit—keep refining until you produce
+the best possible final version.`;
+    }
+    confInput.addEventListener("input", renderPrompt);
+    paperInput.addEventListener("input", renderPrompt);
+    document.querySelectorAll(".preset").forEach(btn => {
+      btn.addEventListener("click", () => { confInput.value = btn.dataset.conf; renderPrompt(); });
+    });
+
+    // Benchmark Tabs
+    document.querySelectorAll(".b-tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".b-tab").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".bench-panel").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.panel).classList.add("active");
+      });
+    });
+
+    // Copy buttons
+    document.querySelectorAll(".copy-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const el = document.getElementById(btn.dataset.copy);
+        if (!el) return;
+        try { await navigator.clipboard.writeText(el.textContent); } catch {}
+        const orig = btn.textContent;
+        btn.textContent = "Copied ✓";
+        setTimeout(() => { btn.textContent = orig; }, 1400);
+      });
+    });
+
+    // Expose hook for automated loupe preview capture
+    window.__showDemoLoupe = (relX, relY) => {
+      const r = stageImg.getBoundingClientRect();
+      updateLoupe(r.left + r.width * relX, r.top + r.height * relY);
+    };
+  </script>
+</body>
+</html>
