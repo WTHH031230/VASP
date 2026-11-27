@@ -2,6 +2,7 @@
 
 # VASP: Visual-Anchored Agent for Scientific Poster Generation
 
+![arXiv](https://img.shields.io/badge/arXiv-Coming_Soon-b31b1b?style=for-the-badge&logo=arxiv)
 [![Project Page](https://img.shields.io/badge/Project_Page-Interactive_Gallery-0f766e?style=for-the-badge)](https://wthh031230.github.io/VASP/)
 [![Dataset](https://img.shields.io/badge/HuggingFace-VASP--data-1d4ed8?style=for-the-badge&logo=huggingface)](https://huggingface.co/datasets/WTHH031230/VASP-data)
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-Claude_Code_%7C_Codex_%7C_Antigravity-b45309?style=for-the-badge)](#agent-skills-experimental--recommended)
