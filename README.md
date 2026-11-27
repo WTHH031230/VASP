@@ -24,10 +24,10 @@
 <br><br>
 
 <a href="https://wthh031230.github.io/VASP/#promo-video">
-  <img src="docs/assets/vasp_promo_teaser.gif" alt="VASP 34-Second Launch Film Preview (Click to watch 1080p MP4 with audio)" width="90%">
+  <img src="docs/assets/vasp_promo_teaser.gif" alt="VASP 38-Second Launch Film Preview (Click to watch 1080p MP4 with audio)" width="90%">
 </a>
 
-<sub><em><b>&#9654; 34-Second Launch Film (Real Execution Artifacts):</b> SemParser role segmentation &amp; region growing &rarr; VisComposer 8-round Playwright checkpoint refinement &rarr; 2.5&times; optical audit &rarr; 6 multi-conference posters. Built in <strong>Antigravity</strong> with <strong>Gemini 4 Neon (xhigh)</strong>. <a href="https://wthh031230.github.io/VASP/#promo-video">Watch full 1080p MP4 with audio on the Project Page</a>.</em></sub>
+<sub><em><b>&#9654; 38-Second Launch Film (Real Execution Artifacts):</b> SemParser role segmentation &amp; region growing &rarr; Vision-Centric Anchoring (key figures locked first + claim&ndash;evidence graph) &rarr; VisComposer 8-round Playwright refinement &rarr; 2.5&times; optical audit &rarr; 6 multi-conference posters. Built in <strong>Antigravity</strong> with <strong>Gemini 4 Neon (xhigh)</strong>. <a href="https://wthh031230.github.io/VASP/#promo-video">Watch full 1080p MP4 with audio on the Project Page</a>.</em></sub>
 
 </div>
 
